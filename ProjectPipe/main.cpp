@@ -41,6 +41,11 @@ int main()
             }
         }
         ImGui::SFML::Update(window, deltaClock.restart());
+      
+        ImGui::Begin("Window Title", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+        ImGui::SetWindowPos(ImVec2(0,0));
+        ImGui::Text("Window Text!");
+        ImGui::End();
 
         // clear the buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
