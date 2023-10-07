@@ -13,6 +13,12 @@
 #include <map>
 
 
+class Item {
+public:
+
+};
+
+
 class Grid : public sf::Drawable, public sf::Transformable
 {
 public:
@@ -65,14 +71,6 @@ private:
 
 
 
-
-
-
-
-
-
-
-
 int main()
 {
     //Init grid
@@ -88,13 +86,13 @@ int main()
     const int mapSize = 50;
     //int fromX,toX,fromY,toY = 0;
     Grid grid;
-    grid.load(gridSizeF,1000,1000);
-    
+    grid.load(gridSizeF, 1000, 1000);
+
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::Default, sf::ContextSettings(32));
     ImGui::SFML::Init(window);
-    //window.setVerticalSyncEnabled(true);
+    window.setVerticalSyncEnabled(false);
     // 
     //init view
     sf::View view;
@@ -107,7 +105,7 @@ int main()
     SideUiView.setViewport(sf::FloatRect(0.f, 0.f, 0.2f, 1.f));
     SideUiView.setSize(960.f, 540.f);
     SideUiView.setCenter(window.getSize().x * 0.1f, window.getSize().y / 2.f);
-    
+
     float viewSpeed = 400.f;
 
 
@@ -115,7 +113,14 @@ int main()
     window.setActive(true);
 
     //Load resources, initialize the OpenGL states, ...
-    sf::RectangleShape shape(sf::Vector2f(gridSizeF/2,gridSizeF/2));
+    sf::RectangleShape shape(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
+
+    sf::RectangleShape placed_item(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
+    placed_item.setFillColor(sf::Color::Blue);
+    sf::RectangleShape** items = new sf::RectangleShape*[1000];
+    for (int i = 0; i < 1000; i++) {
+        items[i] = new sf::RectangleShape[1000];
+    }
     
 
     //Run the main loop
@@ -184,33 +189,60 @@ int main()
                 }
                 
             }
+            else if (event.type == sf::Event::MouseButtonPressed) {
+                items[selectPosGrid.x][selectPosGrid.y] = placed_item;
+                items[selectPosGrid.x][selectPosGrid.y].setPosition(selectPos);
+            }
         }
        
 
         //Update
         //Update Input
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { // left
-            if ((view.getCenter().x - (view.getSize().x / 2.f) - (viewSpeed * dt.asSeconds())) > 0) // cant move into negatives
-               view.move(-viewSpeed*dt.asSeconds(), 0.f);
+            if ((view.getCenter().x - (view.getSize().x / 2.f) - (viewSpeed * dt.asSeconds() * (view.getSize().x / 960))) > 0) // cant move into negatives
+               view.move(-viewSpeed*dt.asSeconds()*(view.getSize().x/ 960), 0.f);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { // right
-            view.move(viewSpeed * dt.asSeconds(), 0.f);
+            view.move(viewSpeed * dt.asSeconds() * (view.getSize().x / 960), 0.f);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { // down
             if ((view.getCenter().y + (view.getSize().y / 2.f) + (viewSpeed * dt.asSeconds())) > 0)
-                view.move(0.f ,viewSpeed * dt.asSeconds());
+                view.move(0.f ,viewSpeed * dt.asSeconds() * (view.getSize().y / 540));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { // up
-            if ((view.getCenter().y - (view.getSize().y / 2.f) - (viewSpeed * dt.asSeconds())) > 0) // cant move into negatives
-            view.move(0.f,-viewSpeed * dt.asSeconds());
+            if ((view.getCenter().y - (view.getSize().y / 2.f) - (viewSpeed * dt.asSeconds() * (view.getSize().y / 540))) > 0) // cant move into negatives
+            view.move(0.f,-viewSpeed * dt.asSeconds() * (view.getSize().y / 540));
         }
        
+
+
+
+
         ImGui::SFML::Update(window, deltaClock.restart());
         //draw ui
-        ImGui::Begin("Window Title", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+        ImGui::Begin("Window Title", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar);
         ImGui::SetWindowPos(ImVec2(0, 0));
         ImGui::SetWindowSize(ImVec2(window.getSize().x*0.2f, window.getSize().y));
         ImGui::Text(ss.str().c_str());
+        if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
+                if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Do stuff */ }
+                if (ImGui::MenuItem("Close", "Ctrl+W")) { /*Do stuff*/ }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+        static int selected = 0;
+        for (int n = 0; n < 5; n++)
+        {
+            char buf[32];
+            sprintf_s(buf, "Object %d", n);
+            if (ImGui::Selectable(buf, selected == n))
+                selected = n;
+        }
+        ImGui::ShowDemoWindow();
         ImGui::End();
 
 
@@ -221,6 +253,11 @@ int main()
         // draw...
         window.draw(shape);
         window.draw(grid);
+        for (int x = 0; x < 100; x++) {
+            for (int y = 0; y < 100; y++) {
+                window.draw(items[x][y]);
+            }
+        }
         
         
 
@@ -241,6 +278,10 @@ int main()
 
     // release resources...
     ImGui::SFML::Shutdown();
+    for (int i = 0; i < 1000; i++) {
+        delete[] items[i];
+    }
+    delete[] items;
     return 0;
   
 }
