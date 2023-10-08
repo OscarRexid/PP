@@ -1,51 +1,37 @@
 ﻿  main.cpp
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(25,27): warning C4018: '<=': signed/unsigned mismatch
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(26,52): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(70,27): warning C4018: '<=': signed/unsigned mismatch
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(71,52): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(27,58): warning C4244: 'argument': conversion from 'unsigned int' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(72,58): warning C4244: 'argument': conversion from 'unsigned int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(27,55): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(72,55): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(32,27): warning C4018: '<=': signed/unsigned mismatch
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(33,56): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(77,27): warning C4018: '<=': signed/unsigned mismatch
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(78,56): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(34,63): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(79,63): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(34,54): warning C4244: 'argument': conversion from 'unsigned int' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(79,54): warning C4244: 'argument': conversion from 'unsigned int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(133,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-          and
-          [
-              T=unsigned int
-          ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(134,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(138,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(180,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=float
@@ -54,19 +40,33 @@ C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(138,45): warning C4
           [
               T=unsigned int
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(139,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(181,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
           with
           [
               T=unsigned int
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(215,78): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(185,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+          and
+          [
+              T=unsigned int
+          ]
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(186,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp(276,78): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
           with
           [
               T=unsigned int
           ]
   Generating code
-  7 of 2526 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
-    3 functions were new in current compilation
+  2 of 2593 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
     74 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ProjectPipe.vcxproj -> C:\Users\swezl\source\repos\ProjectPipe\x64\Release\ProjectPipe.exe

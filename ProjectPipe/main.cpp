@@ -13,19 +13,58 @@
 #include <map>
 
 
-class Item {
+class Node: public sf::Drawable, public sf::Transformable {
 public:
+    enum type {
+        bend,
+        cross,
+        booster
+    };
+    sf::Vector2u locationGrid;
+    type nodeType;
+    int TEXTURE_SIZE = 10;
+
+    Node(sf::Vector2u locG,sf::Vector2f loc):locationGrid(locG), location(loc) {
+        //Set up the graphical icon
+        m_vertices.setPrimitiveType(sf::Triangles);
+        sf::Vertex top( sf::Vector2f(location.x- TEXTURE_SIZE, location.y+ TEXTURE_SIZE), sf::Color::White);
+        sf::Vertex bottom(sf::Vector2f(location.x- TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
+        sf::Vertex topright(sf::Vector2f(location.x+ TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
+        m_vertices.append(top);
+        m_vertices.append(topright);
+        m_vertices.append(bottom);
+    }
+   
+
+private:
+
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        // apply the transform
+        states.transform *= getTransform();
+
+        // apply the tileset texture
+        states.texture = &m_tileset;
+
+        // draw the vertex array
+        target.draw(m_vertices, states);
+        
+    }
+    sf::VertexArray m_vertices;
+    sf::Texture m_tileset;
+    sf::Vector2f location;
 
 };
 
+ 
 
-class Grid : public sf::Drawable, public sf::Transformable
-{
+
+class Grid : public sf::Drawable, public sf::Transformable{
 public:
 
-    bool load(float gridsize,unsigned int rows, unsigned int columns)
+    bool load(float gridsize, unsigned int rows, unsigned int columns)
     {
-       
+
         m_vertices.setPrimitiveType(sf::Lines);
 
         for (int x = 0; x <= columns; x++) {
@@ -87,6 +126,8 @@ int main()
     //int fromX,toX,fromY,toY = 0;
     Grid grid;
     grid.load(gridSizeF, 1000, 1000);
+
+    std::vector<std::unique_ptr<Node>>  Nodes;
 
 
     // create the window
@@ -190,8 +231,10 @@ int main()
                 
             }
             else if (event.type == sf::Event::MouseButtonPressed) {
-                items[selectPosGrid.x][selectPosGrid.y] = placed_item;
-                items[selectPosGrid.x][selectPosGrid.y].setPosition(selectPos);
+                //items[selectPosGrid.x][selectPosGrid.y] = placed_item;
+                //items[selectPosGrid.x][selectPosGrid.y].setPosition(selectPos);
+                std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid,selectPos);
+                Nodes.push_back(std::move(newNode));
             }
         }
        
@@ -212,6 +255,14 @@ int main()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { // up
             if ((view.getCenter().y - (view.getSize().y / 2.f) - (viewSpeed * dt.asSeconds() * (view.getSize().y / 540))) > 0) // cant move into negatives
             view.move(0.f,-viewSpeed * dt.asSeconds() * (view.getSize().y / 540));
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { // up
+            
+            for (int i = 0; i < Nodes.size(); i++) {
+                std::cout << Nodes[i]->locationGrid.x << " " << Nodes[i]->locationGrid.y << "\n";
+            }
+            
+
         }
        
 
@@ -253,11 +304,17 @@ int main()
         // draw...
         window.draw(shape);
         window.draw(grid);
-        for (int x = 0; x < 100; x++) {
+        if (!Nodes.empty()) {
+            for (int i = 0; i < Nodes.size(); i++) {
+                  window.draw(*Nodes[i]);
+            }
+        }
+       
+        /*for (int x = 0; x < 100; x++) {
             for (int y = 0; y < 100; y++) {
                 window.draw(items[x][y]);
             }
-        }
+        }*/
         
         
 
