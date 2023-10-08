@@ -22,17 +22,50 @@ public:
     };
     sf::Vector2u locationGrid;
     type nodeType;
-    int TEXTURE_SIZE = 10;
+    int TEXTURE_SIZE = 5;
 
-    Node(sf::Vector2u locG,sf::Vector2f loc):locationGrid(locG), location(loc) {
+    Node(sf::Vector2u locG,sf::Vector2f loc, int typeint):locationGrid(locG), location(loc), nodeType(type(typeint)) {
+
         //Set up the graphical icon
-        m_vertices.setPrimitiveType(sf::Triangles);
-        sf::Vertex top( sf::Vector2f(location.x- TEXTURE_SIZE, location.y+ TEXTURE_SIZE), sf::Color::White);
-        sf::Vertex bottom(sf::Vector2f(location.x- TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
-        sf::Vertex topright(sf::Vector2f(location.x+ TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
-        m_vertices.append(top);
+        m_vertices.setPrimitiveType(sf::Quads);
+        sf::Vertex topleft = sf::Vertex(sf::Vector2f(location.x - TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
+        sf::Vertex bottomright = sf::Vertex(sf::Vector2f(location.x + TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
+        sf::Vertex topright = sf::Vertex(sf::Vector2f(location.x + TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
+        sf::Vertex bottomleft = sf::Vertex(sf::Vector2f(location.x - TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
+        
+        switch (nodeType) {
+        case type::bend:
+            topleft.color = sf::Color::Blue;
+            topright.color = sf::Color::Blue;
+            bottomright.color = sf::Color::Blue;
+            bottomleft.color = sf::Color::Blue;
+            break;
+        case type::cross:
+            
+            topleft.color = sf::Color::Red;
+            topright.color = sf::Color::Red;
+            bottomright.color = sf::Color::Red;
+            bottomleft.color = sf::Color::Red;
+            break;
+        case type::booster:
+          
+            topleft.color = sf::Color::Green;
+            topright.color = sf::Color::Green;
+            bottomright.color = sf::Color::Green;
+            bottomleft.color = sf::Color::Green;
+            break;
+        default:
+            
+            topleft.color = sf::Color::White;
+            topright.color = sf::Color::White;
+            bottomright.color = sf::Color::White;
+            bottomleft.color = sf::Color::White;
+        }
+        m_vertices.append(topleft);
         m_vertices.append(topright);
-        m_vertices.append(bottom);
+        m_vertices.append(bottomright);
+        m_vertices.append(bottomleft);
+       
     }
    
 
@@ -128,7 +161,7 @@ int main()
     grid.load(gridSizeF, 1000, 1000);
 
     std::vector<std::unique_ptr<Node>>  Nodes;
-
+    static int selected = 0;
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::Default, sf::ContextSettings(32));
@@ -156,12 +189,12 @@ int main()
     //Load resources, initialize the OpenGL states, ...
     sf::RectangleShape shape(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
 
-    sf::RectangleShape placed_item(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
+   /* sf::RectangleShape placed_item(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
     placed_item.setFillColor(sf::Color::Blue);
     sf::RectangleShape** items = new sf::RectangleShape*[1000];
     for (int i = 0; i < 1000; i++) {
         items[i] = new sf::RectangleShape[1000];
-    }
+    }*/
     
 
     //Run the main loop
@@ -215,17 +248,20 @@ int main()
             else if (event.type == sf::Event::MouseWheelMoved) { // zoom in
                 if (event.mouseWheel.delta > 0 && view.getSize().x >100) {
                     view.zoom(10 / 11.f);
-                    window.setView(view);
+                    
                     if ((view.getCenter().x - view.getSize().x) < 0 || (view.getCenter().y - view.getSize().y) < 0) {
                         view.setCenter(sf::Vector2f(view.getSize().x, view.getSize().y));
                     }
+                    
+                    window.setView(view);
                 }
                 else if(view.getSize().x < 4000) { // zoom out
                     view.zoom(11 / 10.f);
-                    window.setView(view);
+                    
                     if ((view.getCenter().x - view.getSize().x) < 0 || (view.getCenter().y - view.getSize().y) < 0) {
                         view.setCenter(sf::Vector2f(view.getSize().x, view.getSize().y));
                     }
+                    window.setView(view);
 
                 }
                 
@@ -233,7 +269,7 @@ int main()
             else if (event.type == sf::Event::MouseButtonPressed) {
                 //items[selectPosGrid.x][selectPosGrid.y] = placed_item;
                 //items[selectPosGrid.x][selectPosGrid.y].setPosition(selectPos);
-                std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid,selectPos);
+                std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid,selectPos,selected);
                 Nodes.push_back(std::move(newNode));
             }
         }
@@ -285,8 +321,8 @@ int main()
             }
             ImGui::EndMenuBar();
         }
-        static int selected = 0;
-        for (int n = 0; n < 5; n++)
+        
+        for (int n = 0; n < 3; n++)
         {
             char buf[32];
             sprintf_s(buf, "Object %d", n);
@@ -335,10 +371,11 @@ int main()
 
     // release resources...
     ImGui::SFML::Shutdown();
-    for (int i = 0; i < 1000; i++) {
+    /*for (int i = 0; i < 1000; i++) {
         delete[] items[i];
     }
     delete[] items;
+    */
     return 0;
   
 }
