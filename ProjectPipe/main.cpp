@@ -1,3 +1,5 @@
+#pragma once
+
 #include "SFML/Graphics.hpp"
 #include "SFML/Window.hpp"
 #include "SFML/OpenGL.hpp"
@@ -11,85 +13,9 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include "Node.hpp"
 
 
-class Node: public sf::Drawable, public sf::Transformable {
-public:
-    enum type {
-        bend,
-        cross,
-        booster
-    };
-    sf::Vector2u locationGrid;
-    type nodeType;
-    int TEXTURE_SIZE = 5;
-
-    Node(sf::Vector2u locG,sf::Vector2f loc, int typeint):locationGrid(locG), location(loc), nodeType(type(typeint)) {
-
-        //Set up the graphical icon
-        m_vertices.setPrimitiveType(sf::Quads);
-        sf::Vertex topleft = sf::Vertex(sf::Vector2f(location.x - TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
-        sf::Vertex bottomright = sf::Vertex(sf::Vector2f(location.x + TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
-        sf::Vertex topright = sf::Vertex(sf::Vector2f(location.x + TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
-        sf::Vertex bottomleft = sf::Vertex(sf::Vector2f(location.x - TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
-        
-        switch (nodeType) {
-        case type::bend:
-            topleft.color = sf::Color::Blue;
-            topright.color = sf::Color::Blue;
-            bottomright.color = sf::Color::Blue;
-            bottomleft.color = sf::Color::Blue;
-            break;
-        case type::cross:
-            
-            topleft.color = sf::Color::Red;
-            topright.color = sf::Color::Red;
-            bottomright.color = sf::Color::Red;
-            bottomleft.color = sf::Color::Red;
-            break;
-        case type::booster:
-          
-            topleft.color = sf::Color::Green;
-            topright.color = sf::Color::Green;
-            bottomright.color = sf::Color::Green;
-            bottomleft.color = sf::Color::Green;
-            break;
-        default:
-            
-            topleft.color = sf::Color::White;
-            topright.color = sf::Color::White;
-            bottomright.color = sf::Color::White;
-            bottomleft.color = sf::Color::White;
-        }
-        m_vertices.append(topleft);
-        m_vertices.append(topright);
-        m_vertices.append(bottomright);
-        m_vertices.append(bottomleft);
-       
-    }
-   
-
-private:
-
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        // apply the transform
-        states.transform *= getTransform();
-
-        // apply the tileset texture
-        states.texture = &m_tileset;
-
-        // draw the vertex array
-        target.draw(m_vertices, states);
-        
-    }
-    sf::VertexArray m_vertices;
-    sf::Texture m_tileset;
-    sf::Vector2f location;
-
-};
-
- 
 
 
 class Grid : public sf::Drawable, public sf::Transformable{
@@ -162,6 +88,7 @@ int main()
 
     std::vector<std::unique_ptr<Node>>  Nodes;
     static int selected = 0;
+    int selectedNode = -1;
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::Default, sf::ContextSettings(32));
@@ -189,13 +116,6 @@ int main()
     //Load resources, initialize the OpenGL states, ...
     sf::RectangleShape shape(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
 
-   /* sf::RectangleShape placed_item(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
-    placed_item.setFillColor(sf::Color::Blue);
-    sf::RectangleShape** items = new sf::RectangleShape*[1000];
-    for (int i = 0; i < 1000; i++) {
-        items[i] = new sf::RectangleShape[1000];
-    }*/
-    
 
     //Run the main loop
     sf::Clock deltaClock;
@@ -205,6 +125,8 @@ int main()
         //Handle events
         dt = deltaClock.restart();
         window.setView(view);
+
+
         //Update mouse positions
         mousePosScreen = sf::Mouse::getPosition();
         mousePosWindow = sf::Mouse::getPosition(window);
@@ -220,8 +142,9 @@ int main()
             selectPos.y = selectPosGrid.y * gridSizeF;
             
         }
-        shape.setPosition(sf::Vector2f(selectPos.x - gridSizeF/4,selectPos.y - gridSizeF / 4));
-        std::stringstream ss;
+        shape.setPosition(sf::Vector2f(selectPos.x - gridSizeF/4,selectPos.y - gridSizeF / 4)); //Gridsnap display(Displays a white box where the item would be placed)
+        
+        std::stringstream ss; // Debugging
         ss << "Screen" << mousePosScreen.x << " " << mousePosScreen.y << "\n"
             << "Window" << mousePosWindow.x << " " << mousePosWindow.y << "\n"
             << "View" << mousePosView.x << " " << mousePosView.y << "\n"
@@ -267,11 +190,48 @@ int main()
                 
             }
             else if (event.type == sf::Event::MouseButtonPressed) {
-                //items[selectPosGrid.x][selectPosGrid.y] = placed_item;
-                //items[selectPosGrid.x][selectPosGrid.y].setPosition(selectPos);
-                std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid,selectPos,selected);
-                Nodes.push_back(std::move(newNode));
+                if ((view.getCenter().x - 0.5f *view.getSize().x) <mousePosView.x && (view.getCenter().x + 0.5f * view.getSize().x) > mousePosView.x && (view.getCenter().y - 0.5f * view.getSize().y) < mousePosView.y && (view.getCenter().y + 0.5f * view.getSize().y) > mousePosView.y) { // make sure the mouse is inside the view
+                    if (!Nodes.empty()) {
+                        bool validPlacement = true;
+                        int invalidNode;
+                        for (int i = 0; i < Nodes.size(); i++) { 
+                            if (Nodes[i]->locationGrid == selectPosGrid) {
+                                validPlacement = false;
+                                invalidNode = i;
+                                break;
+                            }
+                        }
+                        if (validPlacement) {
+                            //Create new Node, of selected type at clicked point
+                            std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selected, Nodes.size() + 1);
+                            Nodes.push_back(std::move(newNode));
+
+                        }
+                        else if (invalidNode == selectedNode) { // Unselect
+                            selectedNode = -1;
+                        }
+                        else { // select new node for config
+                            selectedNode = invalidNode;
+                        }
+
+                    }
+                    else {
+                        //Create new Node, of selected type at clicked point
+                        std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selected, Nodes.size() + 1);
+                        Nodes.push_back(std::move(newNode));
+
+                    }
+
+
+                }
+                else {
+                    std::cout << (view.getCenter().x - 0.5f * view.getSize().x) << "\n";
+                    std::cout << 0.5f*view.getSize().x << "\n";
+                    std::cout << mousePosView.x << "\n";
+                    std::cout << (view.getCenter().x + 0.5f * view.getSize().x) << "\n";
+                }
             }
+                
         }
        
 
@@ -292,7 +252,7 @@ int main()
             if ((view.getCenter().y - (view.getSize().y / 2.f) - (viewSpeed * dt.asSeconds() * (view.getSize().y / 540))) > 0) // cant move into negatives
             view.move(0.f,-viewSpeed * dt.asSeconds() * (view.getSize().y / 540));
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { // up
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { // debuggin
             
             for (int i = 0; i < Nodes.size(); i++) {
                 std::cout << Nodes[i]->locationGrid.x << " " << Nodes[i]->locationGrid.y << "\n";
@@ -306,11 +266,12 @@ int main()
 
 
         ImGui::SFML::Update(window, deltaClock.restart());
+
         //draw ui
         ImGui::Begin("Window Title", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar);
         ImGui::SetWindowPos(ImVec2(0, 0));
         ImGui::SetWindowSize(ImVec2(window.getSize().x*0.2f, window.getSize().y));
-        ImGui::Text(ss.str().c_str());
+        ImGui::Text(ss.str().c_str()); // display debugging
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File"))
             {
@@ -331,6 +292,14 @@ int main()
         }
         ImGui::ShowDemoWindow();
         ImGui::End();
+        if (selectedNode >=0) {
+            Nodes[selectedNode]->drawPopup();
+        }
+
+        //This will become the permanenet ui for each Node such as its name and attributes being displayed in the view
+        //for (int i = 0; i < Nodes.size(); i++) {
+         //   Nodes[i]->drawPopup();
+        //}
 
 
         // clear the buffers
@@ -346,13 +315,6 @@ int main()
             }
         }
        
-        /*for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
-                window.draw(items[x][y]);
-            }
-        }*/
-        
-        
 
 
         // end the current frame (internally swaps the front and back buffers)
@@ -371,11 +333,7 @@ int main()
 
     // release resources...
     ImGui::SFML::Shutdown();
-    /*for (int i = 0; i < 1000; i++) {
-        delete[] items[i];
-    }
-    delete[] items;
-    */
+    
     return 0;
   
 }
