@@ -9,7 +9,7 @@ class Connection : public sf::Drawable, public sf::Transformable {
 public:
     Node* Node1;
     Node* Node2;
-    int TEXTURE_SIZE = 5;
+    float TEXTURE_SIZE = 5.f;
 
     Connection(Node* Node1in, Node* Node2in, int Id);
    // virtual void drawPopup();

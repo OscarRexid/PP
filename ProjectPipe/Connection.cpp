@@ -6,23 +6,50 @@
 #include "imgui/imgui-SFML.h"
 #include <string>
 #include <sstream>
+#include <iostream>
 
 Connection::Connection(Node* Node1in, Node* Node2in, int Id) :Node1(Node1in), Node2(Node2in), ConnectionId(Id){
-    m_vertices.setPrimitiveType(sf::Quads);
-    sf::Vertex topleft = sf::Vertex(sf::Vector2f(Node2->location.x, Node1->location.y), sf::Color::White);
-    sf::Vertex bottomright = sf::Vertex(sf::Vector2f(Node1->location.x, Node2->location.y), sf::Color::White);
-    sf::Vertex topright = sf::Vertex(sf::Vector2f(Node1->location.x, Node1->location.y), sf::Color::White);
-    sf::Vertex bottomleft = sf::Vertex(sf::Vector2f(Node2->location.x, Node2->location.y ), sf::Color::White);
+    m_vertices.setPrimitiveType(sf::TrianglesStrip);
 
-    topleft.color = sf::Color::White;
-    topright.color = sf::Color::White;
-    bottomright.color = sf::Color::White;
-    bottomleft.color = sf::Color::White;
+    float xfactor = 0.f;
+    float yfactor = 0.f;
+   
+    if (Node2->location.x - Node1->location.x == 0) {
+        xfactor = TEXTURE_SIZE;
+    }
+    else if (Node2->location.y - Node1->location.y == 0) {
+        yfactor = TEXTURE_SIZE;
+    }
+    else {
+        xfactor = (abs(Node2->location.x - Node1->location.x) / (Node2->location.x - Node1->location.x)) * TEXTURE_SIZE;
+        yfactor = (abs(Node2->location.y - Node1->location.y) / (Node2->location.y - Node1->location.y)) * TEXTURE_SIZE;
+    }
+    std::cout << xfactor;
+    std::cout << yfactor;
 
-    m_vertices.append(topleft);
-    m_vertices.append(topright);
-    m_vertices.append(bottomright);
-    m_vertices.append(bottomleft);
+    sf::Vertex node1left = sf::Vertex(sf::Vector2f(Node1->location.x - xfactor, Node1->location.y + yfactor), sf::Color::White);
+    sf::Vertex node1right = sf::Vertex(sf::Vector2f(Node1->location.x + xfactor, Node1->location.y - yfactor), sf::Color::White);
+    sf::Vertex node2left = sf::Vertex(sf::Vector2f(Node2->location.x - xfactor , Node2->location.y + yfactor), sf::Color::White);
+    sf::Vertex node2right = sf::Vertex(sf::Vector2f(Node2->location.x + xfactor, Node2->location.y - yfactor), sf::Color::White);
+    float xleft = node2left.position.x + 0.5f * (node1left.position.x - node2left.position.x);
+    float yleft = node2left.position.y + 0.5f * (node1left.position.y - node2left.position.y);
+    float xright = node2right.position.x + 0.5f * (node1right.position.x - node2right.position.x);
+    float yright = node2right.position.y + 0.5f * (node1right.position.y - node2right.position.y);
+    sf::Vertex leftextra = sf::Vertex(sf::Vector2f(xleft, yleft), sf::Color::White);
+    sf::Vertex rightextra = sf::Vertex(sf::Vector2f(xright,yright), sf::Color::White);
+
+    node1left.color = sf::Color::White;
+    node1right.color = sf::Color::White;
+    node2left.color = sf::Color::White;
+    node2right.color = sf::Color::White;
+
+    m_vertices.append(node1left);
+    m_vertices.append(node1right);
+    m_vertices.append(node2left);
+    m_vertices.append(node2right);
+    m_vertices.append(leftextra);
+    m_vertices.append(rightextra);
+    
 }
 
 

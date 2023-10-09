@@ -250,7 +250,7 @@ int main()
                         //1. We have already selected a node to build from and want to either A place a new node or B connect it to another existing node
                         //2. We want to select a node to build from
                         
-                        if (selectedNode >0) {//Case 1
+                        if (selectedNode >=0) {//Case 1
                             if (!Nodes.empty()) { // should be impossible but does not hurt to check
                                 bool validPlacement = false;
                                 int Nodeid;
