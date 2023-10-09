@@ -12,6 +12,7 @@ public:
         booster
     };
     sf::Vector2u locationGrid;
+    sf::Vector2f location;
     type nodeType;
     int TEXTURE_SIZE = 5;
 
@@ -25,7 +26,7 @@ private:
 
     sf::VertexArray m_vertices;
     sf::Texture m_tileset;
-    sf::Vector2f location;
+    
     int NodeId;
 
 };

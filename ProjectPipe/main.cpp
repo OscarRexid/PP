@@ -14,6 +14,7 @@
 #include <vector>
 #include <map>
 #include "Node.hpp"
+#include "Connection.hpp"
 
 
 
@@ -87,7 +88,9 @@ int main()
     grid.load(gridSizeF, 1000, 1000);
 
     std::vector<std::unique_ptr<Node>>  Nodes;
-    static int selected = 0;
+    std::vector<std::unique_ptr<Connection>>  Pipes;
+    static int selectedMain = 0;
+    static int selectedNodeBuild = 0;
     int selectedNode = -1;
 
     // create the window
@@ -158,6 +161,7 @@ int main()
         {
 
             ImGui::SFML::ProcessEvent(event);
+            auto& io = ImGui::GetIO();
             if (event.type == sf::Event::Closed)
             {
                 // end the program
@@ -168,7 +172,7 @@ int main()
                 // adjust the viewport when the window is resized
                 glViewport(0, 0, event.size.width, event.size.height);
             }
-            else if (event.type == sf::Event::MouseWheelMoved) { // zoom in
+            else if (event.type == sf::Event::MouseWheelMoved && !io.WantCaptureMouse) { // zoom in
                 if (event.mouseWheel.delta > 0 && view.getSize().x >100) {
                     view.zoom(10 / 11.f);
                     
@@ -189,48 +193,117 @@ int main()
                 }
                 
             }
-            else if (event.type == sf::Event::MouseButtonPressed) {
-                if ((view.getCenter().x - 0.5f *view.getSize().x) <mousePosView.x && (view.getCenter().x + 0.5f * view.getSize().x) > mousePosView.x && (view.getCenter().y - 0.5f * view.getSize().y) < mousePosView.y && (view.getCenter().y + 0.5f * view.getSize().y) > mousePosView.y) { // make sure the mouse is inside the view
-                    if (!Nodes.empty()) {
-                        bool validPlacement = true;
-                        int invalidNode;
-                        for (int i = 0; i < Nodes.size(); i++) { 
-                            if (Nodes[i]->locationGrid == selectPosGrid) {
-                                validPlacement = false;
-                                invalidNode = i;
-                                break;
+            else if (event.type == sf::Event::MouseButtonPressed && !io.WantCaptureMouse) { //make sure the there is no ui above what we are clicking
+
+                //Building Nodes
+                if (selectedMain == 1) {
+                    if ((view.getCenter().x - 0.5f * view.getSize().x) < mousePosView.x && (view.getCenter().x + 0.5f * view.getSize().x) > mousePosView.x && (view.getCenter().y - 0.5f * view.getSize().y) < mousePosView.y && (view.getCenter().y + 0.5f * view.getSize().y) > mousePosView.y) { // make sure the mouse is inside the view
+                        if (!Nodes.empty()) {
+
+                            //Check if the place we clicked in already has a node
+                            bool validPlacement = true;
+                            int invalidNode;
+                            for (int i = 0; i < Nodes.size(); i++) {
+                                if (Nodes[i]->locationGrid == selectPosGrid) {
+                                    validPlacement = false;
+                                    invalidNode = i;
+                                    break;
+                                }
                             }
+                            if (validPlacement) { 
+                                //Create new Node, of selected type at clicked point
+                                std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selectedNodeBuild, Nodes.size() + 1);
+                                Nodes.push_back(std::move(newNode));
+
+                            }
+                            else if (invalidNode == selectedNode) { // Unselect
+                                selectedNode = -1;
+                            }
+                            else { // select new node for config
+                                selectedNode = invalidNode;
+                            }
+
                         }
-                        if (validPlacement) {
+                        else {
                             //Create new Node, of selected type at clicked point
-                            std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selected, Nodes.size() + 1);
+                            std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selectedNodeBuild, Nodes.size() + 1);
                             Nodes.push_back(std::move(newNode));
 
                         }
-                        else if (invalidNode == selectedNode) { // Unselect
-                            selectedNode = -1;
-                        }
-                        else { // select new node for config
-                            selectedNode = invalidNode;
-                        }
+
 
                     }
                     else {
-                        //Create new Node, of selected type at clicked point
-                        std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selected, Nodes.size() + 1);
-                        Nodes.push_back(std::move(newNode));
+                        std::cout << (view.getCenter().x - 0.5f * view.getSize().x) << "\n";
+                        std::cout << 0.5f * view.getSize().x << "\n";
+                        std::cout << mousePosView.x << "\n";
+                        std::cout << (view.getCenter().x + 0.5f * view.getSize().x) << "\n";
+                    }
+                }
+
+
+                // Building connections(Pipes)
+                else if (selectedMain == 2) { 
+                    if ((view.getCenter().x - 0.5f * view.getSize().x) < mousePosView.x && (view.getCenter().x + 0.5f * view.getSize().x) > mousePosView.x && (view.getCenter().y - 0.5f * view.getSize().y) < mousePosView.y && (view.getCenter().y + 0.5f * view.getSize().y) > mousePosView.y) { // make sure the mouse is inside the view
+                        
+                        //We will have 2 cases
+                        //1. We have already selected a node to build from and want to either A place a new node or B connect it to another existing node
+                        //2. We want to select a node to build from
+                        
+                        if (selectedNode >0) {//Case 1
+                            if (!Nodes.empty()) { // should be impossible but does not hurt to check
+                                bool validPlacement = false;
+                                int Nodeid;
+                                for (int i = 0; i < Nodes.size(); i++) {
+                                    if (Nodes[i]->locationGrid == selectPosGrid) {
+                                        validPlacement = true;
+                                        Nodeid = i;
+                                        break;
+                                    }
+                                }
+                                if (validPlacement && Nodeid != selectedNode) { // Make sure we we dont connect to the same node
+                                    std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size()+1);
+                                    Pipes.push_back(std::move(newCon));
+                                    selectedNode = -1;
+
+                                }
+                                else if (!validPlacement) { //we clicked on a non existing Node so we first create a node there and then connect
+                                    std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, 1, Nodes.size() + 1);
+                                    Nodes.push_back(std::move(newNode));
+                                    std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
+                                    Pipes.push_back(std::move(newCon));
+                                    selectedNode = Nodes.size(); // select the new built node as the selected node
+                                }
+                                else { // We clicked on the alread selected node so we deselect it
+                                    selectedNode = -1;
+                                }
+                            }
+
+                        }
+                        else if(selectedNode == -1) { // case 2
+                            if (!Nodes.empty()) { 
+                                bool validPlacement = false;
+                                int Nodeid;
+                                for (int i = 0; i < Nodes.size(); i++) {
+                                    if (Nodes[i]->locationGrid == selectPosGrid) {
+                                        validPlacement = true;
+                                        Nodeid = i;
+                                        break;
+                                    }
+                                }
+                                if (validPlacement) {
+                                    selectedNode = Nodeid;
+                                }
+                            }
+                        }
+
+
 
                     }
-
-
                 }
-                else {
-                    std::cout << (view.getCenter().x - 0.5f * view.getSize().x) << "\n";
-                    std::cout << 0.5f*view.getSize().x << "\n";
-                    std::cout << mousePosView.x << "\n";
-                    std::cout << (view.getCenter().x + 0.5f * view.getSize().x) << "\n";
-                }
+                
             }
+                
                 
         }
        
@@ -283,13 +356,16 @@ int main()
             ImGui::EndMenuBar();
         }
         
-        for (int n = 0; n < 3; n++)
-        {
-            char buf[32];
-            sprintf_s(buf, "Object %d", n);
-            if (ImGui::Selectable(buf, selected == n))
-                selected = n;
+        
+        if (ImGui::Selectable("Mouse", selectedMain == 0)) { selectedMain = 0; }
+        if (ImGui::Selectable("Place Node", selectedMain == 1)) { selectedMain = 1; }
+        if (selectedMain == 1) {
+            if (ImGui::Selectable("Type 0", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
+            if (ImGui::Selectable("Type 1", selectedNodeBuild == 1)) { selectedNodeBuild = 1; }
+            if (ImGui::Selectable("Type 2", selectedNodeBuild == 2)) { selectedNodeBuild = 2; }
         }
+        if (ImGui::Selectable("Build Connection", selectedMain == 2)) { selectedMain = 2; }
+       
         ImGui::ShowDemoWindow();
         ImGui::End();
         if (selectedNode >=0) {
@@ -312,6 +388,11 @@ int main()
         if (!Nodes.empty()) {
             for (int i = 0; i < Nodes.size(); i++) {
                   window.draw(*Nodes[i]);
+            }
+        }
+        if (!Pipes.empty()) {
+            for (int i = 0; i < Pipes.size(); i++) {
+                window.draw(*Pipes[i]);
             }
         }
        

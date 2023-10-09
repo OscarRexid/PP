@@ -42,6 +42,9 @@
     <ClCompile Include="Node.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
+    <ClCompile Include="Connection.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Node.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Connection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
