@@ -5,6 +5,11 @@ Attempt at making a fluid flow simulator, currently mostly a 2d graphics engine 
 
 Some future goals are interpretening between simplified cfd and classical node simulation. But first I want a function simulation software with placeable nodes and connecting pipes. 
 
+## Todo before demo release
+* Simulation
+* Material properties
+* Ui with simulation information
+* Saving and loading
 
 ## Incomplete!
 
