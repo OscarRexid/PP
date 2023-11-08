@@ -22,7 +22,13 @@ Warning if you for some reasson stumble over this project and this warning is st
 
 ## Acknowledgements
 
- - [SFML](https://www.sfml-dev.org/)
- - [ImGui](https://github.com/ocornut/imgui)
- - [ImGui SFML Backend](https://github.com/SFML/imgui-sfml)
+ ### Software
+  - [SFML](https://www.sfml-dev.org/)
+  - [ImGui](https://github.com/ocornut/imgui)
+  - [ImGui SFML Backend](https://github.com/SFML/imgui-sfml)
+  - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)
 
+ ### Literature 
+  - [Finite-Element Method for Water-Distribution Networks (1975)](https://www.jstor.org/stable/41267962)
+  - [LiquiNet Documentation](https://github.com/samadritakarmakar/LiquiNet/blob/master/Documentation/Documentation.pdf)
+  - [Precise Explicit Approximations of the Colebrook-White Equation for Engineering Systems (2020)](https://link.springer.com/chapter/10.1007/978-3-030-57340-9_37)
