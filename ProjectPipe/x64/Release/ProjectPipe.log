@@ -1,5 +1,7 @@
 ﻿  App.cpp
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(61,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(12,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(13,20): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(62,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=float
@@ -8,12 +10,12 @@ C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(61,45): warning C424
           [
               T=unsigned int
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(62,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(63,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
           with
           [
               T=unsigned int
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(66,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(67,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=float
@@ -22,64 +24,22 @@ C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(66,45): warning C424
           [
               T=unsigned int
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(67,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(68,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
           with
           [
               T=unsigned int
           ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(215,62): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(286,80): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(216,64): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(287,80): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
           with
           [
               T=unsigned int
           ]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\include\memory(3477,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp(155,70): message : see reference to function template instantiation 'std::unique_ptr<Node,std::default_delete<Node>> std::make_unique<Node,sf::Vector2u&,sf::Vector2f&,int&,unsigned __int64,0>(sf::Vector2u &,sf::Vector2f &,int &,unsigned __int64 &&)' being compiled
-  Connection.cpp
-  Grid.cpp
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(12,27): warning C4018: '<=': signed/unsigned mismatch
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(13,52): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(14,58): warning C4244: 'argument': conversion from 'unsigned int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(14,55): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(19,27): warning C4018: '<=': signed/unsigned mismatch
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(20,56): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(21,63): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp(21,54): warning C4244: 'argument': conversion from 'unsigned int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-  imgui-SFML.cpp
-  imgui.cpp
-  imgui_demo.cpp
-  imgui_draw.cpp
-  imgui_tables.cpp
-  imgui_widgets.cpp
-  main.cpp
-  Node.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\include\memory(3436,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(156): message : see reference to function template instantiation 'std::unique_ptr<Node,std::default_delete<Node>> std::make_unique<Node,sf::Vector2u&,sf::Vector2f&,int&,unsigned __int64,0>(sf::Vector2u &,sf::Vector2f &,int &,unsigned __int64 &&)' being compiled
   Generating code
-  1 of 2661 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    76 functions had inline decision re-evaluated but remain unchanged
+  39 of 2744 functions ( 1.4%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    75 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  ProjectPipe.vcxproj -> C:\Users\swezl\source\repos\ProjectPipe\x64\Release\ProjectPipe.exe
+  ProjectPipe.vcxproj -> C:\Users\User\OneDrive\Documents\GitHub\PP\x64\Release\ProjectPipe.exe

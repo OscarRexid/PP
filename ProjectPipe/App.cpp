@@ -2,6 +2,7 @@
 #include "App.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui-SFML.h"
+#include "Simulation.hpp"
 
 #include<sstream>
 #include<iostream>
@@ -296,7 +297,10 @@ void App::Run() {
             ImGui::EndMenuBar();
         }
 
-
+        if (ImGui::Button("Run Simulation")) { 
+            simulation mysim(this);
+            mysim.run();
+        }
         if (ImGui::Selectable("Mouse", selectedMain == 0)) { selectedMain = 0; }
         if (ImGui::Selectable("Place Node", selectedMain == 1)) { selectedMain = 1; }
         if (selectedMain == 1) {

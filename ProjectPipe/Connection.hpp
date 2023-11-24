@@ -9,6 +9,9 @@ class Connection : public sf::Drawable, public sf::Transformable {
 public:
     Node* Node1;
     Node* Node2;
+    float roughness = 0.005;
+    float diameter = 0.1;
+    float length = 50.f;
     float TEXTURE_SIZE = 3.f;
 
     Connection(Node* Node1in, Node* Node2in, int Id);

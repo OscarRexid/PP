@@ -12,6 +12,8 @@ class App {
 public:
     App();
     void Run();
+    std::vector<std::unique_ptr<Node>>  Nodes;
+    std::vector<std::unique_ptr<Connection>>  Pipes;
 private:
     float gridSizeF = 20.f;
     unsigned gridSizeU = static_cast<unsigned>(gridSizeF);
@@ -27,7 +29,6 @@ private:
     Grid grid;
     
     float viewSpeed = 400.f;
-    std::vector<std::unique_ptr<Node>>  Nodes;
-    std::vector<std::unique_ptr<Connection>>  Pipes;
+
 
 };
