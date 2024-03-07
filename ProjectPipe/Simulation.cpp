@@ -28,14 +28,15 @@ void simulation::run() {
     const double mu = 1;
     const double rho = 1;
 
-    const int size = myapp->Pipes.size();
+    const int sizePipes = myapp->Pipes.size();
     std::vector<double> c_t; //pipe transitional coeffecients
     std::vector<double> q; //pipe flows
     std::vector<double> h; //pipe headlosses
     std::vector<double> c; // pipe coefficients
     std::vector<double> A; // cross sectional area
 
-    for (int i = 0; i < size; i++) {
+    //Intitials
+    for (int i = 0; i < sizePipes; i++) {
         A.push_back(pow((myapp->Pipes[i]->diameter / 2.f), 2)* pi);
         c_t.push_back(frictionfactor(200000,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2)));
         
@@ -46,6 +47,51 @@ void simulation::run() {
         c.push_back( q[i] / h[i]);
     
     
+    }
+
+    //Loop until minimizing enough for our margin of error
+    int errors = 1;
+    int sizeNodes = myapp->Nodes.size();
+    while (errors > 0) {
+        Eigen::MatrixXd M = Eigen::MatrixXd::Zero(sizeNodes, sizeNodes);
+        
+        //Inserting all the connections and their coeffecients into the matrix
+        for (int i = 0; i <= sizeNodes; i++) {
+            //For each node all the pipes will be positive at position (i,i) and then subtracted
+            // at position (i,connection node)
+            for (int j = 0; j <= sizePipes; j++) {
+                if (myapp->Pipes[j]->Node1->getId() == myapp->Nodes[i]->getId()) { 
+                    //Node 1 of pipe j is our node
+                    M(i, i) += c[j];
+                    M(i, myapp->Pipes[j]->Node2->getId()) = -c[j]; // maybe should be -1?
+                }
+                else if (myapp->Pipes[j]->Node2->getId() == myapp->Nodes[i]->getId()) {
+                    //Node 2 of pipe j is our node
+                    M(i, i) += c[j];
+                    M(i, myapp->Pipes[j]->Node1->getId()) = -c[j]; // maybe should be -1?
+                }
+            }
+            
+        }
+        std::vector<int> knownQ;
+        Eigen::VectorXd H = Eigen::VectorXd::Zero(sizeNodes);
+        Eigen::VectorXd Q;
+        for (int i = 0; i <= sizeNodes; i++) {
+            //check if node is outlet because then Q is unknown
+            if (TRUE) {
+                knownQ.push_back(i);
+                
+            }
+            //Check if node is known flow otherwise Q=0
+            if (TRUE) {
+                Q(i) = 0;
+            }
+            
+        }
+        Eigen::MatrixXd MQ = M(knownQ, knownQ);
+        Eigen::VectorXd H1 = MQ.colPivHouseholderQr().solve(Q);
+        std::cout << H1;
+        Eigen::VectorXd H = Eigen::VectorXd::Zero(sizeNodes);
     }
     std::cout << "Simulating DEBUG" << "\n";
 }

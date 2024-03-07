@@ -63,7 +63,9 @@
     }
     
 
-
+    int Node::getId() {
+        return NodeId;
+    }
 
 
     void Node::draw(sf::RenderTarget& target, sf::RenderStates states) const

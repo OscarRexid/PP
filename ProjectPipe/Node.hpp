@@ -18,6 +18,8 @@ public:
 
     Node(sf::Vector2u locG, sf::Vector2f loc, int typeint, int Id);
     virtual void drawPopup();
+    int getId();
+    
 
 
 private:
@@ -26,7 +28,7 @@ private:
 
     sf::VertexArray m_vertices;
     sf::Texture m_tileset;
-    
     int NodeId;
+    
 
 };
