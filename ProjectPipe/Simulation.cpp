@@ -26,7 +26,7 @@ simulation::simulation(App *app) {
 void simulation::run() {
 
     const double mu = 1;
-    const double rho = 1;
+    const double rho = 1000.f;
 
     const int sizePipes = myapp->Pipes.size();
     std::vector<double> c_t; //pipe transitional coeffecients
@@ -38,11 +38,12 @@ void simulation::run() {
     //Intitials
     for (int i = 0; i < sizePipes; i++) {
         A.push_back(pow((myapp->Pipes[i]->diameter / 2.f), 2)* pi);
-        c_t.push_back(frictionfactor(200000,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2)));
+        c_t.push_back(frictionfactor(200000.f,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2)));
         
-        q.push_back(200000 * A[i] * mu / (rho * myapp->Pipes[i]->diameter));
+        q.push_back(200000.f * A[i] * myapp->Pipes[i]->roughness / (rho * myapp->Pipes[i]->diameter));
 
         h.push_back( pow(q[i], 2) / c_t[i]);
+        std::cout << h[i] << "\n";
 
         c.push_back( q[i] / h[i]);
     
@@ -52,57 +53,76 @@ void simulation::run() {
     //Loop until minimizing enough for our margin of error
     int errors = 1;
     int sizeNodes = myapp->Nodes.size();
+    int attempts = 0;
     while (errors > 0) {
         Eigen::MatrixXd M = Eigen::MatrixXd::Zero(sizeNodes, sizeNodes);
         
         //Inserting all the connections and their coeffecients into the matrix
-        for (int i = 0; i <= sizeNodes; i++) {
+        for (int i = 0; i < sizeNodes; i++) {
             //For each node all the pipes will be positive at position (i,i) and then subtracted
             // at position (i,connection node)
-            for (int j = 0; j <= sizePipes; j++) {
+            for (int j = 0; j < sizePipes; j++) {
                 if (myapp->Pipes[j]->Node1->getId() == myapp->Nodes[i]->getId()) { 
                     //Node 1 of pipe j is our node
                     M(i, i) += c[j];
-                    M(i, myapp->Pipes[j]->Node2->getId()) = -c[j]; // maybe should be -1?
+                    M(i, myapp->Pipes[j]->Node2->getId()-1) = -c[j]; // maybe should be -1?
                 }
                 else if (myapp->Pipes[j]->Node2->getId() == myapp->Nodes[i]->getId()) {
                     //Node 2 of pipe j is our node
                     M(i, i) += c[j];
-                    M(i, myapp->Pipes[j]->Node1->getId()) = -c[j]; // maybe should be -1?
+                    M(i, myapp->Pipes[j]->Node1->getId()-1) = -c[j]; // maybe should be -1?
                 }
             }
             
         }
         std::vector<int> knownQ;
         Eigen::VectorXd H = Eigen::VectorXd::Zero(sizeNodes);
-        Eigen::VectorXd Q;
-        for (int i = 0; i <= sizeNodes; i++) {
+        Eigen::VectorXd Q = Eigen::VectorXd::Zero(sizeNodes);
+        for (int i = 0; i < sizeNodes; i++) {
             //check if node is outlet because then Q is unknown
-            if (TRUE) {
+            if (!(myapp->Nodes[i]->flowTypeVar == Node::flowType::output)) {
                 knownQ.push_back(i);
-                
             }
             //Check if node is known flow otherwise Q=0
-            if (TRUE) {
-                Q(i) = 0;
+            if (myapp->Nodes[i]->flowTypeVar == Node::flowType::input) {
+                Q(i) = myapp->Nodes[i]->flowNode->flow;
             }
             
         }
-        Eigen::MatrixXd MQ = M(knownQ, knownQ);
-        Eigen::VectorXd H1 = MQ.colPivHouseholderQr().solve(Q);
-        std::cout << H1;
+        for (int i = 0; i < knownQ.size(); i++) {
+            std::cout << "Q:" << knownQ[i] << "\n";
+        }
+       
+        Eigen::VectorXd Q1 = Q(knownQ); // Remove unknown flows(outlets)
+        for (int i = 0; i < knownQ.size(); i++) {
+            std::cout << "Q1:" << Q1[i] << "\n";
+        }
+        Eigen::MatrixXd MQ = M(knownQ, knownQ); //same as above but for coeffecient matrix
+        Eigen::VectorXd H1 = MQ.colPivHouseholderQr().solve(Q1); // Solve matrix
+        for (int i = 0; i < H1.size(); i++) {
+            std::cout <<i << " H1: " << H1[i] << "\n";
+        }
+
         int j = 0;
-        for (int i = 0; i <= sizeNodes; i++) {
+        for (int i = 0; i < sizeNodes; i++) {
             //Check if node is outlet then H is known
-            if (TRUE) {
-                H(i) = H1(j);
+            if (myapp->Nodes[i]->flowTypeVar == Node::flowType::output) {
+                H(i) = myapp->Nodes[i]->height;
+            }
+            //else if (myapp->Nodes[i]->flowTypeVar == Node::flowType::input) {
+
+            //}
+            else {
+                H(i) = H1(j) + myapp->Nodes[i]->height;
                 j++;
             }
+            std::cout << i << " H: " << H[i] << "\n";
         }
         std::vector<double> h2;
-        for (int i = 0; i <= sizePipes; i++) {
+        for (int i = 0; i < sizePipes; i++) {
             //relationship between head and headloss
-            h2.push_back(H[myapp->Pipes[i]->Node1->getId()] - H[myapp->Pipes[i]->Node2->getId()]);
+            h2.push_back(H[myapp->Pipes[i]->Node1->getId()-1] - H[myapp->Pipes[i]->Node2->getId()-1]);
+            std::cout << "h2: " << h2[i] << "\n";
         }
 
         std::vector<double> dev;
@@ -111,44 +131,59 @@ void simulation::run() {
         std::vector<double> h3;
         errors = 0;
 
-        for (int i = 0; i <= sizeNodes; i++) {
-
-
+        for (int i = 0; i < sizePipes; i++) {
 
             q2.push_back( h2[i] * c[i]); //recalcualte flow from headloss  q_c
-            double Re = reynold(q2[i], myapp->Pipes[i]->diameter, myapp->Pipes[i]->roughness,1000);
-            c_t.push_back( frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2))); // k
-            h3.push_back(pow(q2[i], 2) / c_t[i]); //recalcualte headloss from flow
-
-
+            double Re = reynold(abs(q2[i]), myapp->Pipes[i]->diameter, myapp->Pipes[i]->roughness,1000);
+            c_t.push_back( frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2))); // k
+            if (q2[i] < 0) {
+                h3.push_back(-1.f*pow(q2[i], 2) / c_t[i]); //recalcualte headloss from flow
+            }
+            else {
+                h3.push_back(pow(q2[i], 2) / c_t[i]); //recalcualte headloss from flow
+            }
             c2.push_back( q2[i] / h3[i]); // new resitance coefficient
-
 
             dev.push_back( (abs(h3[i]) / abs(h2[i])) - 1); //deviation
 
-
+            std::cout << "\n" << i << " q: " << q[i] << "  " << q2[i] << "\n";
             std::cout << "\n" << i << " h: " << h2[i] << "  " << h3[i] << "\n";
             std::cout << i << " dev: " << dev[i] * 100 << "%\n";
             if (abs(dev[i]) > myapp->allowedDev) {
                 std::cout << i << ": C: " << c[i] << "C2: " << c2[i] << "\n";
-                c[i] = (c2[i] + c[i]) / 2; // new restiance coeffecient based on average
+                c[i] = (c2[i] + c[i]) / 2.f; // new restiance coeffecient based on average
 
                 q[i] = c[i] * h2[i]; // new flow
+                std::cout << "q: " << q[i] << "\n";
 
-                double Re = reynold(q[i], myapp->Pipes[i]->diameter, myapp->Pipes[i]->roughness, 1000);
-
-                c_t[i] = frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2));
-
-                h[i] = pow(q[i], 2) / c_t[i];
+                double Re = reynold(abs(q[i]), myapp->Pipes[i]->diameter,1000.f, myapp->Pipes[i]->roughness);
+                std::cout << "Re: " << Re << "\n";
+                c_t[i] = frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2));
+                std::cout << "c_t:" << c_t[i] << "\n";
+                if (q[i] < 0) {
+                    h[i] = -1.f*pow(q[i], 2) / c_t[i];
+                }
+                else {
+                    h[i] = pow(q[i], 2) / c_t[i];
+                }
+                std::cout << "h:" << h[i] << "\n";
 
                 c[i] = q[i] / h[i];
-
+                std::cout << "c:" << c[i] << "\n";
                 errors++;
 
             }
 
         }
+        std::cout << "Errors: " << errors << "\n";
+        attempts++;
+        std::cout << "Attempts:" << attempts << "\n";
+    }
+    for (int i = 0; i < q.size(); i++) {
+        std::cout << "Headloss coeffecient: " << c_t[i] << "\n";
 
     }
-    std::cout << "Simulating DEBUG" << "\n";
+    
+
+    std::cout << "Finished simulating" << "\n";
 }

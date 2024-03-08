@@ -10,7 +10,7 @@ public:
     Node* Node1;
     Node* Node2;
     float roughness = 0.005;
-    float diameter = 0.1;
+    float diameter = 0.15;
     float length = 50.f;
     float TEXTURE_SIZE = 3.f;
 

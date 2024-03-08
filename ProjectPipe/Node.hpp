@@ -32,6 +32,7 @@ public:
     inputType inputTypeVar;
     std::unique_ptr<KnownFlowNode> flowNode;
     int TEXTURE_SIZE = 5;
+    double height = 0;
 
     Node(sf::Vector2u locG, sf::Vector2f loc, int typeint,int type2int, int Id);
     virtual void drawPopup();

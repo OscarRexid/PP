@@ -63,7 +63,22 @@
         
         
         }
-       
+        else if (flowTypeVar == flowType::output) {
+            outputTypeVar = outputType(type2int);
+            m_vertices.setPrimitiveType(sf::Quads);
+            sf::Vertex topleft = sf::Vertex(sf::Vector2f(location.x - TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
+            sf::Vertex bottomright = sf::Vertex(sf::Vector2f(location.x + TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
+            sf::Vertex topright = sf::Vertex(sf::Vector2f(location.x + TEXTURE_SIZE, location.y + TEXTURE_SIZE), sf::Color::White);
+            sf::Vertex bottomleft = sf::Vertex(sf::Vector2f(location.x - TEXTURE_SIZE, location.y - TEXTURE_SIZE), sf::Color::White);
+            topleft.color = sf::Color::Cyan;
+            topright.color = sf::Color::Cyan;
+            bottomright.color = sf::Color::Cyan;
+            bottomleft.color = sf::Color::Cyan;
+            m_vertices.append(topleft);
+            m_vertices.append(topright);
+            m_vertices.append(bottomright);
+            m_vertices.append(bottomleft);
+        }
 
        
 
