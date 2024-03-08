@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Node">
       <UniqueIdentifier>{40328d93-816f-41cd-aa80-ebd24b0e6e4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Node">
+      <UniqueIdentifier>{bd7992d0-3e3e-4e0a-a03e-7fbd5ff27870}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -60,6 +63,9 @@
     <ClCompile Include="Fluidcalculations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="KnownFlowNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -89,12 +95,6 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Node.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Connection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="App.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -109,6 +109,15 @@
     </ClInclude>
     <ClInclude Include="Fluidcalculations.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Connection.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="KnownFlowNode.hpp">
+      <Filter>Header Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

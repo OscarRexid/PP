@@ -143,6 +143,7 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="KnownFlowNode.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Node.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="KnownFlowNode.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="Node.hpp" />
     <ClInclude Include="Simulation.hpp" />

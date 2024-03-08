@@ -3,20 +3,37 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Window.hpp"
 #include "SFML/OpenGL.hpp"
+#include "KnownFlowNode.hpp"
 
 class Node : public sf::Drawable, public sf::Transformable {
 public:
-    enum type {
+    enum flowType {
+        input,
+        output,
+        connection
+    };
+    enum connectionType {
         bend,
         cross,
         booster
+
+    };
+    enum inputType {
+        knownFlow
+    };
+    enum outputType {
+        open
     };
     sf::Vector2u locationGrid;
     sf::Vector2f location;
-    type nodeType;
+    flowType flowTypeVar;
+    outputType outputTypeVar;
+    connectionType connectionTypeVar;
+    inputType inputTypeVar;
+    std::unique_ptr<KnownFlowNode> flowNode;
     int TEXTURE_SIZE = 5;
 
-    Node(sf::Vector2u locG, sf::Vector2f loc, int typeint, int Id);
+    Node(sf::Vector2u locG, sf::Vector2f loc, int typeint,int type2int, int Id);
     virtual void drawPopup();
     int getId();
     

@@ -91,7 +91,64 @@ void simulation::run() {
         Eigen::MatrixXd MQ = M(knownQ, knownQ);
         Eigen::VectorXd H1 = MQ.colPivHouseholderQr().solve(Q);
         std::cout << H1;
-        Eigen::VectorXd H = Eigen::VectorXd::Zero(sizeNodes);
+        int j = 0;
+        for (int i = 0; i <= sizeNodes; i++) {
+            //Check if node is outlet then H is known
+            if (TRUE) {
+                H(i) = H1(j);
+                j++;
+            }
+        }
+        std::vector<double> h2;
+        for (int i = 0; i <= sizePipes; i++) {
+            //relationship between head and headloss
+            h2.push_back(H[myapp->Pipes[i]->Node1->getId()] - H[myapp->Pipes[i]->Node2->getId()]);
+        }
+
+        std::vector<double> dev;
+        std::vector<double> q2;
+        std::vector<double> c2;
+        std::vector<double> h3;
+        errors = 0;
+
+        for (int i = 0; i <= sizeNodes; i++) {
+
+
+
+            q2.push_back( h2[i] * c[i]); //recalcualte flow from headloss  q_c
+            double Re = reynold(q2[i], myapp->Pipes[i]->diameter, myapp->Pipes[i]->roughness,1000);
+            c_t.push_back( frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2))); // k
+            h3.push_back(pow(q2[i], 2) / c_t[i]); //recalcualte headloss from flow
+
+
+            c2.push_back( q2[i] / h3[i]); // new resitance coefficient
+
+
+            dev.push_back( (abs(h3[i]) / abs(h2[i])) - 1); //deviation
+
+
+            std::cout << "\n" << i << " h: " << h2[i] << "  " << h3[i] << "\n";
+            std::cout << i << " dev: " << dev[i] * 100 << "%\n";
+            if (abs(dev[i]) > myapp->allowedDev) {
+                std::cout << i << ": C: " << c[i] << "C2: " << c2[i] << "\n";
+                c[i] = (c2[i] + c[i]) / 2; // new restiance coeffecient based on average
+
+                q[i] = c[i] * h2[i]; // new flow
+
+                double Re = reynold(q[i], myapp->Pipes[i]->diameter, myapp->Pipes[i]->roughness, 1000);
+
+                c_t[i] = frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2));
+
+                h[i] = pow(q[i], 2) / c_t[i];
+
+                c[i] = q[i] / h[i];
+
+                errors++;
+
+            }
+
+        }
+
     }
     std::cout << "Simulating DEBUG" << "\n";
 }

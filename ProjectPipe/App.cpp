@@ -19,6 +19,9 @@ App::App() {
 void App::Run() {
 	static int selectedMain = 0;
 	static int selectedNodeBuild = 0;
+    static int selectedMainType = 0;
+    static int selectedInput = 0;
+    static int selectedOutput = 0;
 	int selectedNode = -1;
     float AccumZoom = 1.f;
     sf::RectangleShape shape(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
@@ -153,7 +156,7 @@ void App::Run() {
                             }
                             if (validPlacement) {
                                 //Create new Node, of selected type at clicked point
-                                std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selectedNodeBuild, Nodes.size() + 1);
+                                std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selectedMainType, selectedNodeBuild, Nodes.size() + 1);
                                 Nodes.push_back(std::move(newNode));
 
                             }
@@ -167,7 +170,7 @@ void App::Run() {
                         }
                         else {
                             //Create new Node, of selected type at clicked point
-                            std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selectedNodeBuild, Nodes.size() + 1);
+                            std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, selectedMainType, selectedNodeBuild, Nodes.size() + 1);
                             Nodes.push_back(std::move(newNode));
 
                         }
@@ -209,7 +212,7 @@ void App::Run() {
 
                                 }
                                 else if (!validPlacement) { //we clicked on a non existing Node so we first create a node there and then connect
-                                    std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos, 1, Nodes.size() + 1);
+                                    std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos,1, 1, Nodes.size() + 1);
                                     Nodes.push_back(std::move(newNode));
                                     std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
                                     Pipes.push_back(std::move(newCon));
@@ -304,9 +307,21 @@ void App::Run() {
         if (ImGui::Selectable("Mouse", selectedMain == 0)) { selectedMain = 0; }
         if (ImGui::Selectable("Place Node", selectedMain == 1)) { selectedMain = 1; }
         if (selectedMain == 1) {
-            if (ImGui::Selectable("Type 0", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
-            if (ImGui::Selectable("Type 1", selectedNodeBuild == 1)) { selectedNodeBuild = 1; }
-            if (ImGui::Selectable("Type 2", selectedNodeBuild == 2)) { selectedNodeBuild = 2; }
+            if (ImGui::Selectable("Place Input", selectedMainType == 0)) { selectedMainType = 0; }
+            if (selectedMainType == 0) {
+                if (ImGui::Selectable("KnownFlow", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
+            }
+            if (ImGui::Selectable("Place Output", selectedMainType == 1)) { selectedMainType = 1; }
+            if (selectedMainType == 1) {
+                if (ImGui::Selectable("Open", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
+            }
+            if (ImGui::Selectable("Place Connection", selectedMainType == 2)) { selectedMainType = 2; }
+            if (selectedMainType == 2) {
+                if (ImGui::Selectable("Type 0", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
+                if (ImGui::Selectable("Type 1", selectedNodeBuild == 1)) { selectedNodeBuild = 1; }
+                if (ImGui::Selectable("Type 2", selectedNodeBuild == 2)) { selectedNodeBuild = 2; }
+            }
+                   
         }
         if (ImGui::Selectable("Build Connection", selectedMain == 2)) { selectedMain = 2; }
 
