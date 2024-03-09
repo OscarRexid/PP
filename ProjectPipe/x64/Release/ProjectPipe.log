@@ -1,7 +1,7 @@
 ﻿  App.cpp
 C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(12,21): warning C4305: 'initializing': truncation from 'double' to 'float'
 C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(14,20): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(65,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(66,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=float
@@ -10,12 +10,12 @@ C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(65,45): warning C
           [
               T=unsigned int
           ]
-C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(66,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(67,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
           with
           [
               T=unsigned int
           ]
-C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(70,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(71,45): warning C4244: '=': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=float
@@ -24,22 +24,33 @@ C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(70,45): warning C
           [
               T=unsigned int
           ]
-C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(71,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(72,36): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
           with
           [
               T=unsigned int
           ]
-C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(219,64): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(298,80): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(222,64): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(307,80): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
           with
           [
               T=unsigned int
           ]
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\include\memory(3436,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(159): message : see reference to function template instantiation 'std::unique_ptr<Node,std::default_delete<Node>> std::make_unique<Node,sf::Vector2u&,sf::Vector2f&,int&,int&,unsigned __int64,0>(sf::Vector2u &,sf::Vector2f &,int &,int &,unsigned __int64 &&)' being compiled
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\App.cpp(161): message : see reference to function template instantiation 'std::unique_ptr<Node,std::default_delete<Node>> std::make_unique<Node,sf::Vector2u&,sf::Vector2f&,int&,int&,unsigned __int64,0>(sf::Vector2u &,sf::Vector2f &,int &,int &,unsigned __int64 &&)' being compiled
+  Connection.cpp
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(12,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(14,20): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Simulation.cpp
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(12,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(14,20): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Simulation.cpp(31,46): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Simulation.cpp(31,46): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Simulation.cpp(55,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  main.cpp
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(12,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Connection.hpp(14,20): warning C4305: 'initializing': truncation from 'double' to 'float'
   Generating code
-  0 of 7179 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB and IOBJ mismatch, fall back to full compilation.
+  All 7180 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   ProjectPipe.vcxproj -> C:\Users\User\OneDrive\Documents\GitHub\PP\x64\Release\ProjectPipe.exe

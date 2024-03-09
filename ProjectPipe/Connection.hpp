@@ -9,15 +9,15 @@ class Connection : public sf::Drawable, public sf::Transformable {
 public:
     Node* Node1;
     Node* Node2;
-    float roughness = 0.005;
+    double roughness = 0.005;
     float rotationDegrees;
-    float diameter = 0.15;
-    float length = 50.f;
+    double diameter = 0.15;
+    double length = 10.f;
     float TEXTURE_SIZE = 3.f;
     sf::VertexArray m_vertices;
 
     Connection(Node* Node1in, Node* Node2in, int Id);
-   // virtual void drawPopup();
+    virtual void drawPopup();
 
 
 private:

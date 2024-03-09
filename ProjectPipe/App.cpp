@@ -23,6 +23,7 @@ void App::Run() {
     static int selectedInput = 0;
     static int selectedOutput = 0;
 	int selectedNode = -1;
+    int selectedPipe = -1;
     float AccumZoom = 1.f;
     sf::RectangleShape shape(sf::Vector2f(gridSizeF / 2, gridSizeF / 2));
 
@@ -138,6 +139,7 @@ void App::Run() {
 
             }
             else if (event.type == sf::Event::MouseButtonPressed && !io.WantCaptureMouse) { //make sure the there is no ui above what we are clicking
+                
 
                 //Building Nodes
                 if (selectedMain == 1) {
@@ -165,6 +167,7 @@ void App::Run() {
                             }
                             else { // select new node for config
                                 selectedNode = invalidNode;
+                                selectedPipe = -1;//Unselect pipe if we have selected a node
                             }
 
                         }
@@ -217,6 +220,7 @@ void App::Run() {
                                     std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
                                     Pipes.push_back(std::move(newCon));
                                     selectedNode = Nodes.size(); // select the new built node as the selected node
+                                    selectedPipe = -1;//Unselect pipe if we have selected a node
                                 }
                                 else { // We clicked on the alread selected node so we deselect it
                                     selectedNode = -1;
@@ -237,6 +241,7 @@ void App::Run() {
                                 }
                                 if (validPlacement) {
                                     selectedNode = Nodeid;
+                                    selectedPipe = -1;//Unselect pipe if we have selected a node
                                 }
                             }
                         }
@@ -248,7 +253,11 @@ void App::Run() {
                 else if (selectedMain == 0) {
                     if ((view.getCenter().x - 0.5f * view.getSize().x) < mousePosView.x && (view.getCenter().x + 0.5f * view.getSize().x) > mousePosView.x && (view.getCenter().y - 0.5f * view.getSize().y) < mousePosView.y && (view.getCenter().y + 0.5f * view.getSize().y) > mousePosView.y) { // make sure the mouse is inside the view
                         for (int i = 0; i < Pipes.size(); i++) {
-                            clickedOn(i, mousePosView);
+                            if (clickedOn(i, mousePosView)) {
+                                selectedNode = -1; //Unselect node if we have selected a pipe
+                                selectedPipe = i;
+                                break;
+                            }
                         }
 
                     }
@@ -338,11 +347,10 @@ void App::Run() {
         if (selectedNode >= 0) {
             Nodes[selectedNode]->drawPopup();
         }
-
-        //This will become the permanenet ui for each Node such as its name and attributes being displayed in the view
-        //for (int i = 0; i < Nodes.size(); i++) {
-         //   Nodes[i]->drawPopup();
-        //}
+        if (selectedPipe >= 0) {
+            Pipes[selectedPipe]->drawPopup();
+        }
+       
 
 
         // clear the buffers
@@ -364,14 +372,10 @@ void App::Run() {
                 window.draw(*Nodes[i]);
             }
         }
-      
-
 
 
         // end the current frame (internally swaps the front and back buffers)
         window.setView(window.getDefaultView());
-
-
 
 
         ImGui::SFML::Render(window);
@@ -381,14 +385,12 @@ void App::Run() {
 
 
 
-
-
     // release resources...
     ImGui::SFML::Shutdown();
 
-
-
 }
+
+
 
 bool App::clickedOn(int element, sf::Vector2f mousePosView){
     //Needs further work as its only intended to be used for 

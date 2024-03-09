@@ -53,6 +53,19 @@ Connection::Connection(Node* Node1in, Node* Node2in, int Id) :Node1(Node1in), No
     
 }
 
+void Connection::drawPopup()
+{
+    std::stringstream pipeText;
+    pipeText << "Node: " << ConnectionId;
+    ImGui::Begin("Window", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+    ImGui::Text(pipeText.str().c_str());
+    ImGui::InputDouble("Diameter", &diameter);
+    ImGui::InputDouble("Length", &length);
+    ImGui::InputDouble("Roughness", &roughness);
+   
+    ImGui::End();
+}
+
 
 void Connection::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
