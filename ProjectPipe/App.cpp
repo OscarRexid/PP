@@ -245,6 +245,14 @@ void App::Run() {
 
                     }
                 }
+                else if (selectedMain == 0) {
+                    if ((view.getCenter().x - 0.5f * view.getSize().x) < mousePosView.x && (view.getCenter().x + 0.5f * view.getSize().x) > mousePosView.x && (view.getCenter().y - 0.5f * view.getSize().y) < mousePosView.y && (view.getCenter().y + 0.5f * view.getSize().y) > mousePosView.y) { // make sure the mouse is inside the view
+                        for (int i = 0; i < Pipes.size(); i++) {
+                            clickedOn(i, mousePosView);
+                        }
+
+                    }
+                }
 
             }
 
@@ -380,4 +388,34 @@ void App::Run() {
 
 
 
+}
+
+bool App::clickedOn(int element, sf::Vector2f mousePosView){
+    //Needs further work as its only intended to be used for 
+
+
+
+    //First we do rough check with big square, it is very impresice but spares trying things that are barely onscreen
+    if (Pipes[element]->m_vertices.getBounds().contains(mousePosView)) {
+
+        //Now we will do some simple trig to determine if we are roughly inside the angled square
+        //The weakness of this method is it ignores the changes brought to the x and y cordinates of the angled pieces
+        // but it is computationally unnecces
+        double top = Pipes[element]->m_vertices.getBounds().top;
+        double left = Pipes[element]->m_vertices.getBounds().left;
+        double width = Pipes[element]->m_vertices.getBounds().width;
+        double height = Pipes[element]->m_vertices.getBounds().height;
+        double dx = mousePosView.x - left;
+        std::cout <<  mousePosView.y-top + Pipes[element]->TEXTURE_SIZE * sinf(Pipes[element]->rotationDegrees) << " : " << dx * height / width << "\n";
+
+        //The texture size should be 0.5 but is instead multipled with 0.8 to give it a slightly bigger hitbox
+        if (mousePosView.y-top + Pipes[element]->TEXTURE_SIZE*0.8*sinf(Pipes[element]->rotationDegrees) >= dx * height / width) {
+            if (mousePosView.y - top - Pipes[element]->TEXTURE_SIZE * 0.8*cosf(Pipes[element]->rotationDegrees) <= dx * height / width) {
+                //If it gets to here then we have collided 
+                return true;
+            }
+        }
+    }
+
+    return false;
 }

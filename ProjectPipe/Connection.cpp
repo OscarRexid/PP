@@ -5,6 +5,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui-SFML.h"
 #include <string>
+#include <math.h>
 #include <sstream>
 #include <iostream>
 
@@ -37,7 +38,7 @@ Connection::Connection(Node* Node1in, Node* Node2in, int Id) :Node1(Node1in), No
     float yright = node2right.position.y + 0.5f * (node1right.position.y - node2right.position.y);
     sf::Vertex leftextra = sf::Vertex(sf::Vector2f(xleft, yleft), sf::Color::White);
     sf::Vertex rightextra = sf::Vertex(sf::Vector2f(xright,yright), sf::Color::White);
-
+    rotationDegrees = atanf(abs(xleft - xright) / abs(yleft - yright));
     node1left.color = sf::Color::White;
     node1right.color = sf::Color::White;
     node2left.color = sf::Color::White;

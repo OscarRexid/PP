@@ -12,9 +12,10 @@ class App {
 public:
     App();
     void Run();
+    bool clickedOn(int element, sf::Vector2f mousePosView);
     std::vector<std::unique_ptr<Node>>  Nodes;
     std::vector<std::unique_ptr<Connection>>  Pipes;
-    double allowedDev = 0.05;
+    double allowedDev = 0.01;
 private:
     float gridSizeF = 20.f;
     unsigned gridSizeU = static_cast<unsigned>(gridSizeF);
