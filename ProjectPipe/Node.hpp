@@ -14,7 +14,7 @@ public:
     };
     enum connectionType {
         bend,
-        cross,
+        junction,
         booster
 
     };
@@ -33,13 +33,12 @@ public:
     std::unique_ptr<KnownFlowNode> flowNode;
     int TEXTURE_SIZE = 5;
     double height = 0;
+    double KValue = 0;
 
     Node(sf::Vector2u locG, sf::Vector2f loc, int typeint,int type2int, int Id);
     virtual void drawPopup();
     int getId();
-    
-
-
+    int connectionsAmount = 0;
 private:
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

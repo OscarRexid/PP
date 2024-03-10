@@ -5,7 +5,7 @@
 #include <math.h>
 
 double reynold(double flow, double diameter,double rho, double mu) {
-    double A = pow(diameter / 2, 2) * 3.1415;
+    double A = pow((diameter / 2.f), 2) * 3.1415;
     double V = flow / A;
     return rho * V * diameter / mu;
 
@@ -15,7 +15,7 @@ double simulation::frictionfactor(double Re,int i) {
     //https://link.springer.com/chapter/10.1007/978-3-030-57340-9_37
     double ep_D = myapp->Pipes[i]->roughness / myapp->Pipes[i]->diameter;
     double A0 = -0.79638 * log((ep_D / 8.208) + (7.3357 / Re));
-    double A1 = Re * ep_D + 9.3120665 * A0;
+    double A1 = Re *ep_D+ 9.3120665 * A0;
     double f = (8.128943 + A1) / (8.128943 * A0 - 0.86859209 * A1 * log(A1 / (3.7099535 * Re)));
     return pow(f, 2);
 }
@@ -25,7 +25,6 @@ simulation::simulation(App *app) {
 }
 void simulation::run() {
 
-    const double mu = 1;
     const double rho = 1000.f;
 
     const int sizePipes = myapp->Pipes.size();
@@ -40,12 +39,21 @@ void simulation::run() {
     //Intitials
     for (int i = 0; i < sizePipes; i++) {
         A.push_back(pow((myapp->Pipes[i]->diameter / 2.f), 2)* pi);
-        c_t.push_back(frictionfactor(200000.f,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2)));
+        if (myapp->Pipes[i]->Node1->KValue > 0) {
+            c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(200000.f, i) * myapp->Pipes[i]->length)) + (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue);
+        }
+        else {
+            c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(200000.f, i) * myapp->Pipes[i]->length)));
+        }
         
-        q.push_back(200000.f * A[i] * myapp->Pipes[i]->roughness / (rho * myapp->Pipes[i]->diameter));
 
-        h.push_back( pow(q[i], 2) / c_t[i]);
-        std::cout << h[i] << "\n";
+        //c_t.push_back((frictionfactor(200000.f,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2))) + myapp->Pipes[i]->Node1->KValue/(2 * g * pow(A[i], 2)));
+        
+        q.push_back(200000.f * A[i] * 0.001 / (rho * myapp->Pipes[i]->diameter));
+        std::cout << "q: " << q[i] << "\n";
+        std::cout << "c_t: " << c_t[i] << "\n";
+        h.push_back( (pow(q[i], 2) / c_t[i]) );
+        std::cout << "h: " << h[i] << "\n";
 
         c.push_back( q[i] / h[i]);
     
@@ -134,8 +142,13 @@ void simulation::run() {
         for (int i = 0; i < sizePipes; i++) {
 
             q2.push_back( h2[i] * c[i]); //recalcualte flow from headloss  q_c
-            double Re = reynold(abs(q2[i]), myapp->Pipes[i]->diameter, myapp->Pipes[i]->roughness,1000);
-            c_t.push_back( frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2))); // k
+            double Re = reynold(abs(q2[i]), myapp->Pipes[i]->diameter, 1000.f, 0.001);
+            if (myapp->Pipes[i]->Node1->KValue > 0) {
+                c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(Re, i) * myapp->Pipes[i]->length)) + (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue);
+            }
+            else {
+                c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(Re, i) * myapp->Pipes[i]->length)));
+            }
             if (q2[i] < 0) {
                 h3.push_back(-1.f*pow(q2[i], 2) / c_t[i]); //recalcualte headloss from flow
             }
@@ -156,10 +169,16 @@ void simulation::run() {
                 q[i] = c[i] * h2[i]; // new flow
                 std::cout << "q: " << q[i] << "\n";
 
-                double Re = reynold(abs(q[i]), myapp->Pipes[i]->diameter,1000.f, myapp->Pipes[i]->roughness);
+                double Re = reynold(abs(q[i]), myapp->Pipes[i]->diameter,1000.f, 0.001);
                 std::cout << "Re: " << Re << "\n";
-                c_t[i] = frictionfactor(Re,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2));
+                if (myapp->Pipes[i]->Node1->KValue > 0) {
+                    c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(Re, i) * myapp->Pipes[i]->length)) + (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue);
+                }
+                else {
+                    c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(Re, i) * myapp->Pipes[i]->length)));
+                }
                 std::cout << "c_t:" << c_t[i] << "\n";
+                std::cout << "c(Kvalue): " << myapp->Pipes[i]->Node1->KValue / (2 * g * pow(A[i], 2)) << "\n";
                 if (q[i] < 0) {
                     h[i] = -1.f*pow(q[i], 2) / c_t[i];
                 }

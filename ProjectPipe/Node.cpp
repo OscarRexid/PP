@@ -35,7 +35,7 @@
                 bottomright.color = sf::Color::Blue;
                 bottomleft.color = sf::Color::Blue;
                 break;
-            case connectionType::cross:
+            case connectionType::junction:
 
                 topleft.color = sf::Color::Red;
                 topright.color = sf::Color::Red;
@@ -104,6 +104,11 @@
                 ImGui::InputDouble("Flow",&flowNode->flow);
             }
         }
+        if (flowTypeVar == flowType::connection) {
+            if (inputTypeVar == connectionType::bend) {
+                ImGui::InputDouble("K-Value", &KValue);
+            }
+        }
         ImGui::End();
         
     }
@@ -112,7 +117,6 @@
     int Node::getId() {
         return NodeId;
     }
-
 
     void Node::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {

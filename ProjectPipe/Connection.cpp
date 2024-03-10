@@ -11,7 +11,8 @@
 
 Connection::Connection(Node* Node1in, Node* Node2in, int Id) :Node1(Node1in), Node2(Node2in), ConnectionId(Id){
     m_vertices.setPrimitiveType(sf::TrianglesStrip);
-
+    Node1in->connectionsAmount += 1;
+    Node2in->connectionsAmount += 1;
     float xfactor = 0.f;
     float yfactor = 0.f;
    

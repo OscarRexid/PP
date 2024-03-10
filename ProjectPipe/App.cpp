@@ -209,12 +209,23 @@ void App::Run() {
                                     }
                                 }
                                 if (validPlacement && Nodeid != selectedNode) { // Make sure we we dont connect to the same node
-                                    std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
-                                    Pipes.push_back(std::move(newCon));
-                                    selectedNode = -1;
+                                    
+                                    //We make sure bends cant be connected to more than 2 pipes as 
+                                    //then its a junction, bit of a jank solution but it will do for now
+                                    if (Nodes[selectedNode]->connectionTypeVar == Node::connectionType::bend && Nodes[selectedNode]->connectionsAmount <= 1) {
+                                        if (Nodes[Nodeid]->connectionTypeVar == Node::connectionType::bend && Nodes[Nodeid]->connectionsAmount <= 1) {
+                                            std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
+                                            Pipes.push_back(std::move(newCon));
+                                            selectedNode = -1;
+                                        }
+                                    }
 
                                 }
                                 else if (!validPlacement) { //we clicked on a non existing Node so we first create a node there and then connect
+                                   
+                                    //Still need to add better features here to which node gets built and to check amount
+                                    //connections on the node getting built from
+                                    
                                     std::unique_ptr<Node> newNode = std::make_unique<Node>(selectPosGrid, selectPos,1, 1, Nodes.size() + 1);
                                     Nodes.push_back(std::move(newNode));
                                     std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
@@ -332,11 +343,11 @@ void App::Run() {
             if (selectedMainType == 1) {
                 if (ImGui::Selectable("Open", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
             }
-            if (ImGui::Selectable("Place Connection", selectedMainType == 2)) { selectedMainType = 2; }
+            if (ImGui::Selectable("Place joint", selectedMainType == 2)) { selectedMainType = 2; }
             if (selectedMainType == 2) {
-                if (ImGui::Selectable("Type 0", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
-                if (ImGui::Selectable("Type 1", selectedNodeBuild == 1)) { selectedNodeBuild = 1; }
-                if (ImGui::Selectable("Type 2", selectedNodeBuild == 2)) { selectedNodeBuild = 2; }
+                if (ImGui::Selectable("Bend", selectedNodeBuild == 0)) { selectedNodeBuild = 0; }
+                if (ImGui::Selectable("Junction", selectedNodeBuild == 1)) { selectedNodeBuild = 1; }
+                if (ImGui::Selectable("Booster", selectedNodeBuild == 2)) { selectedNodeBuild = 2; }
             }
                    
         }
