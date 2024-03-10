@@ -51,19 +51,56 @@ Connection::Connection(Node* Node1in, Node* Node2in, int Id) :Node1(Node1in), No
     m_vertices.append(leftextra);
     m_vertices.append(rightextra);
     
+
+    //Font and text stuff
+    font.loadFromFile("Roboto-Medium.ttf");
+    idText.setFont(font);
+    idText.setCharacterSize(20);
+    idText.setString(std::to_string(ConnectionId));
+    sf::Vector2f midpoint = Node1->location + 0.5f * (Node2->location - Node1->location);
+    midpoint.y += 10; // making sure the text wont be inside the pipe(moves it down)
+    midpoint.x -= 10; // same as above but for vertical pipes(moves it left)
+    idText.setPosition(midpoint);
+    
 }
 
 void Connection::drawPopup()
 {
     std::stringstream pipeText;
-    pipeText << "Node: " << ConnectionId;
+    pipeText << "Pipe: " << ConnectionId;
     ImGui::Begin("Window", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
     ImGui::Text(pipeText.str().c_str());
     ImGui::InputDouble("Diameter", &diameter);
     ImGui::InputDouble("Length", &length);
     ImGui::InputDouble("Roughness", &roughness);
+    std::stringstream flowText;
+    std::stringstream velText;
+    std::stringstream preassureText;
+    ImGui::Text("Results:");
+    flowText << "Flow: " << flow;
+    velText << "Velocity: " << velocity;
+    preassureText << "Preassureloss: " << preassure_loss;
+    ImGui::Text(flowText.str().c_str());
+    ImGui::Text(velText.str().c_str());
+    ImGui::Text(preassureText.str().c_str());
    
     ImGui::End();
+}
+
+
+
+void Connection::storeResults(double inFlow, double inPreassure1, double inPreassure2)
+{
+    //Storing results, later will be passed through unit converter
+    if (inFlow < 0) {
+        //Flow from node 2 to node 1
+    }
+    else if (inFlow > 0) {
+        //Flow from node1 to node 2
+    }
+    flow = abs(inFlow);
+    preassure_loss = abs(inPreassure1 - inPreassure2) / (9.81 * 1000);
+    velocity = flow / (pow(diameter, 2) / 4 * 3.1415);
 }
 
 
@@ -71,11 +108,12 @@ void Connection::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     // apply the transform
     states.transform *= getTransform();
-
+    target.draw(idText, states);
     // apply the tileset texture
     states.texture = &m_tileset;
 
     // draw the vertex array
     target.draw(m_vertices, states);
+    
 
 }

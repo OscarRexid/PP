@@ -29,11 +29,13 @@ void simulation::run() {
     const double rho = 1000.f;
 
     const int sizePipes = myapp->Pipes.size();
+    int sizeNodes = myapp->Nodes.size();
     std::vector<double> c_t; //pipe transitional coeffecients
     std::vector<double> q; //pipe flows
     std::vector<double> h; //pipe headlosses
     std::vector<double> c; // pipe coefficients
     std::vector<double> A; // cross sectional area
+    Eigen::VectorXd H = Eigen::VectorXd::Zero(sizeNodes);
 
     //Intitials
     for (int i = 0; i < sizePipes; i++) {
@@ -52,7 +54,6 @@ void simulation::run() {
 
     //Loop until minimizing enough for our margin of error
     int errors = 1;
-    int sizeNodes = myapp->Nodes.size();
     int attempts = 0;
     while (errors > 0) {
         Eigen::MatrixXd M = Eigen::MatrixXd::Zero(sizeNodes, sizeNodes);
@@ -76,7 +77,6 @@ void simulation::run() {
             
         }
         std::vector<int> knownQ;
-        Eigen::VectorXd H = Eigen::VectorXd::Zero(sizeNodes);
         Eigen::VectorXd Q = Eigen::VectorXd::Zero(sizeNodes);
         for (int i = 0; i < sizeNodes; i++) {
             //check if node is outlet because then Q is unknown
@@ -179,11 +179,13 @@ void simulation::run() {
         attempts++;
         std::cout << "Attempts:" << attempts << "\n";
     }
-    for (int i = 0; i < q.size(); i++) {
-        std::cout << "Headloss coeffecient: " << c_t[i] << "\n";
-
-    }
+    
     
 
     std::cout << "Finished simulating" << "\n";
+
+    //Storing results for post-processing
+    for (int i = 0; i < sizePipes; i++) {
+        myapp->Pipes[i]->storeResults(q[i], H[myapp->Pipes[i]->Node1->getId() - 1], H[myapp->Pipes[i]->Node2->getId() - 1]);
+    }
 }

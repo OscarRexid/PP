@@ -19,6 +19,7 @@ public:
     Connection(Node* Node1in, Node* Node2in, int Id);
     virtual void drawPopup();
 
+    virtual void storeResults(double inFlow, double inPreassure1, double inPreassure2);
 
 private:
 
@@ -27,5 +28,12 @@ private:
 
     sf::Texture m_tileset;
     int ConnectionId;
+    sf::Text idText;
+    sf::Font font;
+    //Results storage
+    double flow;
+    double velocity;
+    double preassure_loss;
+    
 
 };

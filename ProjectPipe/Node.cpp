@@ -79,7 +79,15 @@
             m_vertices.append(bottomright);
             m_vertices.append(bottomleft);
         }
-
+        font.loadFromFile("Roboto-Medium.ttf");
+        idText.setFont(font);
+        idText.setCharacterSize(18);
+        idText.setStyle(sf::Text::Italic);
+        idText.setString(std::to_string(NodeId));
+        sf::Vector2f midpoint = location;
+        midpoint.y += 10; // making sure the text wont be inside the pipe(moves it down)
+        midpoint.x -= 10; // same as above but for vertical pipes(moves it left)
+        idText.setPosition(midpoint);
        
 
     }
@@ -112,7 +120,8 @@
        
             // apply the transform
             states.transform *= getTransform();
-
+            //Draw text before applying texture
+            target.draw(idText, states);
             // apply the tileset texture
             states.texture = &m_tileset;
 
