@@ -5,11 +5,19 @@ Attempt at making a fluid flow simulator, currently mostly a 2d graphics engine 
 
 Some future goals are interpretening between simplified cfd and classical node simulation. But first I want a function simulation software with placeable nodes and connecting pipes. 
 
-## Todo before demo release
-* Simulation
-* Material properties
-* Ui with simulation information
-* Saving and loading
+## First tech demo has been released
+
+### What does it include? 
+Basic features to simulate water networks. Its really not a lot and I would say its more to be able to look back on in the future
+
+### Whats next?
+ - Acounting for resitances with geometry(Bends etc)
+ - Boosters(Basic pumps)
+ - Deleting items
+ - Potentially the start to moddable fluids
+ - Tanks of fluid
+ - Better results post-processing
+ - Some performance improvements
 
 ## Incomplete!
 
