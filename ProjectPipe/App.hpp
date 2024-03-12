@@ -19,6 +19,7 @@ public:
 private:
     float gridSizeF = 20.f;
     unsigned gridSizeU = static_cast<unsigned>(gridSizeF);
+    void deleteObject(int element, bool isPipe);
     sf::Time dt;
     sf::Vector2i mousePosScreen;
     sf::Vector2i mousePosWindow;

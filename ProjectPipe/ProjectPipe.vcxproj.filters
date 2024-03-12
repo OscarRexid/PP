@@ -66,6 +66,12 @@
     <ClCompile Include="KnownFlowNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
+    <ClCompile Include="FluidManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Booster.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -117,6 +123,12 @@
       <Filter>Header Files\Node</Filter>
     </ClInclude>
     <ClInclude Include="KnownFlowNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="FluidManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Booster.hpp">
       <Filter>Header Files\Node</Filter>
     </ClInclude>
   </ItemGroup>

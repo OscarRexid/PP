@@ -13,6 +13,8 @@ Connection::Connection(Node* Node1in, Node* Node2in, int Id) :Node1(Node1in), No
     m_vertices.setPrimitiveType(sf::TrianglesStrip);
     Node1in->connectionsAmount += 1;
     Node2in->connectionsAmount += 1;
+    Node1in->connectedPipes.push_back(this);
+    Node2in->connectedPipes.push_back(this);
     float xfactor = 0.f;
     float yfactor = 0.f;
    
@@ -88,7 +90,17 @@ void Connection::drawPopup()
     ImGui::End();
 }
 
+int Connection::getId() {
+    return ConnectionId;
+}
 
+void Connection::UpdateId(int newId) {
+    newId++;
+    if (newId != ConnectionId) {
+        idText.setString(std::to_string(ConnectionId));
+    }
+    
+}
 
 void Connection::storeResults(double inFlow, double inPreassure1, double inPreassure2)
 {

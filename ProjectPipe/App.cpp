@@ -9,6 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+//#include <algorithm>
 
 
 
@@ -305,6 +306,17 @@ void App::Run() {
 
 
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Delete)) {
+            //Will need further validation before passing input but will do for now
+            if (selectedNode > 0) {
+                deleteObject(selectedNode, FALSE);
+                selectedNode = -1;
+            }
+            else if (selectedPipe > 0) {
+                deleteObject(selectedPipe, TRUE);
+                selectedPipe = -1;
+            }
+        }
 
 
 
@@ -401,7 +413,47 @@ void App::Run() {
 
 }
 
+void App::deleteObject(int element, bool isPipe) {
+    //Deleting Pipes
+    if (isPipe) {
+        //First erase it then update all ids
+        for (int i = 0; i < Nodes.size(); i++) { 
+            std::vector<Connection*>::iterator position = std::find(Nodes[i]->connectedPipes.begin(), Nodes[i]->connectedPipes.end(), Pipes[element].get());
+            if (position != Nodes[i]->connectedPipes.end()) // == .end() means the element was not found
+                Nodes[i]->connectedPipes.erase(position);
+            
+        }
+        Pipes.erase(Pipes.begin() + element);
+        for (int i = 0; i < Pipes.size(); i++) { //potential performance improvement, only do from i = element
+            Pipes[i]->UpdateId(i);
+        }
+    }
+    //Deleting Nodes
+    else {
+        //First we check if any pipes are attached to it then they will be deleted
+        bool deletedPipe = false;
+        // This is broken but will fix later
+        for (int i = 0; i < Pipes.size(); i++) {
+            if (Nodes[element].get() == Pipes[i]->Node1 || Nodes[element].get() == Pipes[i]->Node2) {
+                Pipes.erase(Pipes.begin() + i);
+                deletedPipe = true;
+            }
+            
+        }
+        if (deletedPipe) {
+            for (int i = 0; i < Pipes.size(); i++) { //potential performance improvement, only do from i = element
+                Pipes[i]->UpdateId(i);
+            }
+        }
+        //Then this works the same as for pipes
+        Nodes.erase(Nodes.begin() + element);
+        for (int i = 0; i < Nodes.size(); i++) { //potential performance improvement, only do from i = element
+            Nodes[i]->updateId(i);
+        }
+        
+    }
 
+}
 
 bool App::clickedOn(int element, sf::Vector2f mousePosView){
     //Needs further work as its only intended to be used for 

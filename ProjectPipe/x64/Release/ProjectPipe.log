@@ -1,10 +1,11 @@
-﻿  Simulation.cpp
+﻿  Node.cpp
+  Simulation.cpp
 C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Simulation.cpp(30,46): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Simulation.cpp(30,46): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
 C:\Users\User\OneDrive\Documents\GitHub\PP\ProjectPipe\Simulation.cpp(31,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   Generating code
-  1 of 7189 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  2 of 7317 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    152 functions had inline decision re-evaluated but remain unchanged
+    150 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ProjectPipe.vcxproj -> C:\Users\User\OneDrive\Documents\GitHub\PP\x64\Release\ProjectPipe.exe

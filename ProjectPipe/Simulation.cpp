@@ -39,20 +39,30 @@ void simulation::run() {
     //Intitials
     for (int i = 0; i < sizePipes; i++) {
         A.push_back(pow((myapp->Pipes[i]->diameter / 2.f), 2)* pi);
+        c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(200000.f, i) * myapp->Pipes[i]->length)));
         if (myapp->Pipes[i]->Node1->KValue > 0) {
-            c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(200000.f, i) * myapp->Pipes[i]->length)) + (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue);
+            c_t[i] += (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue;
         }
-        else {
-            c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(200000.f, i) * myapp->Pipes[i]->length)));
-        }
+        
         
 
         //c_t.push_back((frictionfactor(200000.f,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2))) + myapp->Pipes[i]->Node1->KValue/(2 * g * pow(A[i], 2)));
         
         q.push_back(200000.f * A[i] * 0.001 / (rho * myapp->Pipes[i]->diameter));
+        if (myapp->Pipes[i]->afterBooster) {
+            if (myapp->Pipes[i]->boosterNode == 1) {
+                q[i] += c_t[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
+            }
+            else {
+                q[i] += c_t[i] * myapp->Pipes[i]->Node2->boosterNode->headGained;
+            }
+                
+        }
         std::cout << "q: " << q[i] << "\n";
         std::cout << "c_t: " << c_t[i] << "\n";
+        
         h.push_back( (pow(q[i], 2) / c_t[i]) );
+        
         std::cout << "h: " << h[i] << "\n";
 
         c.push_back( q[i] / h[i]);
@@ -65,11 +75,14 @@ void simulation::run() {
     int attempts = 0;
     while (errors > 0) {
         Eigen::MatrixXd M = Eigen::MatrixXd::Zero(sizeNodes, sizeNodes);
-        
+
+
         //Inserting all the connections and their coeffecients into the matrix
         for (int i = 0; i < sizeNodes; i++) {
             //For each node all the pipes will be positive at position (i,i) and then subtracted
             // at position (i,connection node)
+           
+            
             for (int j = 0; j < sizePipes; j++) {
                 if (myapp->Pipes[j]->Node1->getId() == myapp->Nodes[i]->getId()) { 
                     //Node 1 of pipe j is our node
@@ -120,6 +133,9 @@ void simulation::run() {
             //else if (myapp->Nodes[i]->flowTypeVar == Node::flowType::input) {
 
             //}
+            else if (myapp->Nodes[i]->flowTypeVar == Node::flowType::connection && myapp->Nodes[i]->connectionTypeVar == Node::connectionType::booster) {
+                H(i) = H1(j) + myapp->Nodes[i]->height + myapp->Nodes[i]->boosterNode->headGained;
+            }
             else {
                 H(i) = H1(j) + myapp->Nodes[i]->height;
                 j++;
@@ -142,6 +158,15 @@ void simulation::run() {
         for (int i = 0; i < sizePipes; i++) {
 
             q2.push_back( h2[i] * c[i]); //recalcualte flow from headloss  q_c
+            if (myapp->Pipes[i]->afterBooster) {
+                if (myapp->Pipes[i]->boosterNode == 1) {
+                    q2[i] += c[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
+                }
+                else {
+                    q2[i] += c[i] * myapp->Pipes[i]->Node2->boosterNode->headGained;
+                }
+
+            }
             double Re = reynold(abs(q2[i]), myapp->Pipes[i]->diameter, 1000.f, 0.001);
             if (myapp->Pipes[i]->Node1->KValue > 0) {
                 c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(Re, i) * myapp->Pipes[i]->length)) + (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue);
@@ -167,6 +192,15 @@ void simulation::run() {
                 c[i] = (c2[i] + c[i]) / 2.f; // new restiance coeffecient based on average
 
                 q[i] = c[i] * h2[i]; // new flow
+                if (myapp->Pipes[i]->afterBooster) {
+                    if (myapp->Pipes[i]->boosterNode == 1) {
+                        q[i] += c[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
+                    }
+                    else {
+                        q[i] += c[i] * myapp->Pipes[i]->Node2->boosterNode->headGained;
+                    }
+
+                }
                 std::cout << "q: " << q[i] << "\n";
 
                 double Re = reynold(abs(q[i]), myapp->Pipes[i]->diameter,1000.f, 0.001);
@@ -207,4 +241,5 @@ void simulation::run() {
     for (int i = 0; i < sizePipes; i++) {
         myapp->Pipes[i]->storeResults(q[i], H[myapp->Pipes[i]->Node1->getId() - 1], H[myapp->Pipes[i]->Node2->getId() - 1]);
     }
+
 }

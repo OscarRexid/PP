@@ -4,6 +4,13 @@
 #include "SFML/Window.hpp"
 #include "SFML/OpenGL.hpp"
 #include "KnownFlowNode.hpp"
+#include "Booster.hpp"
+#include "Connection.hpp"
+
+#include <vector>
+
+class Connection; // forward declaration because circular referencing
+class Booster;
 
 class Node : public sf::Drawable, public sf::Transformable {
 public:
@@ -24,6 +31,7 @@ public:
     enum outputType {
         open
     };
+    std::vector<Connection*> connectedPipes;
     sf::Vector2u locationGrid;
     sf::Vector2f location;
     flowType flowTypeVar;
@@ -31,6 +39,7 @@ public:
     connectionType connectionTypeVar;
     inputType inputTypeVar;
     std::unique_ptr<KnownFlowNode> flowNode;
+    std::unique_ptr<Booster> boosterNode;
     int TEXTURE_SIZE = 5;
     double height = 0;
     double KValue = 0;
@@ -38,6 +47,7 @@ public:
     Node(sf::Vector2u locG, sf::Vector2f loc, int typeint,int type2int, int Id);
     virtual void drawPopup();
     int getId();
+    void updateId(int newId);
     int connectionsAmount = 0;
 private:
 

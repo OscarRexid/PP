@@ -42,13 +42,16 @@
                 bottomright.color = sf::Color::Red;
                 bottomleft.color = sf::Color::Red;
                 break;
-            case connectionType::booster:
+            case connectionType::booster: {
 
+                std::unique_ptr<Booster> newBooster = std::make_unique<Booster>(locationGrid, location);
+                boosterNode = std::move(newBooster);
                 topleft.color = sf::Color::Green;
                 topright.color = sf::Color::Green;
                 bottomright.color = sf::Color::Green;
                 bottomleft.color = sf::Color::Green;
                 break;
+            }
             default:
 
                 topleft.color = sf::Color::White;
@@ -105,8 +108,37 @@
             }
         }
         if (flowTypeVar == flowType::connection) {
-            if (inputTypeVar == connectionType::bend) {
+            if (connectionTypeVar == connectionType::bend) {
                 ImGui::InputDouble("K-Value", &KValue);
+            }
+            if (connectionTypeVar == connectionType::booster) {
+                ImGui::InputDouble("Head gained", &boosterNode->headGained);
+                
+                //Selecting which pipe to connect to
+                static const char* current_item;
+                if (ImGui::BeginCombo("Connected Pipe", current_item))
+                {
+                    for (int i = 0; i < connectedPipes.size(); i++) {
+                        bool is_selected = (boosterNode->outletPipe == connectedPipes[i]);
+                        if (ImGui::Selectable(std::to_string(connectedPipes[i]->getId()).c_str(), is_selected)) {
+                            if (connectedPipes[i]->Node1->getId() == NodeId) {
+                                boosterNode->updateoutletPipe(connectedPipes[i],1);
+                            }
+                            else if (connectedPipes[i]->Node2->getId() == NodeId) {
+                                boosterNode->updateoutletPipe(connectedPipes[i],2);
+                            }
+                            else {
+                                //ERROR
+                                std::cout << "ERROR: Incorrect node when changing outletpipe";
+                            }
+                            
+                            current_item = std::to_string(connectedPipes[i]->getId()).c_str();
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
+
             }
         }
         ImGui::End();
@@ -116,6 +148,15 @@
 
     int Node::getId() {
         return NodeId;
+    }
+
+    void Node::updateId(int newId)
+    {
+        newId++;
+        if (newId != NodeId) {
+            NodeId = newId;
+            idText.setString(std::to_string(NodeId));
+        }
     }
 
     void Node::draw(sf::RenderTarget& target, sf::RenderStates states) const
