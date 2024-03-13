@@ -213,13 +213,21 @@ void App::Run() {
                                     
                                     //We make sure bends cant be connected to more than 2 pipes as 
                                     //then its a junction, bit of a jank solution but it will do for now
-                                    if (Nodes[selectedNode]->connectionTypeVar == Node::connectionType::bend && Nodes[selectedNode]->connectionsAmount <= 1) {
-                                        if (Nodes[Nodeid]->connectionTypeVar == Node::connectionType::bend && Nodes[Nodeid]->connectionsAmount <= 1) {
-                                            std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
-                                            Pipes.push_back(std::move(newCon));
-                                            selectedNode = -1;
+                                    if (Nodes[selectedNode]->flowTypeVar == Node::flowType::connection) {
+                                        if (Nodes[selectedNode]->connectionTypeVar == Node::connectionType::bend && Nodes[selectedNode]->connectionsAmount <= 1) {
+                                            if (Nodes[Nodeid]->connectionTypeVar == Node::connectionType::bend && Nodes[Nodeid]->connectionsAmount <= 1) {
+                                                std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
+                                                Pipes.push_back(std::move(newCon));
+                                                selectedNode = -1;
+                                            }
                                         }
                                     }
+                                    else {
+                                        std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
+                                        Pipes.push_back(std::move(newCon));
+                                        selectedNode = -1;
+                                    }
+                                    
 
                                 }
                                 else if (!validPlacement) { //we clicked on a non existing Node so we first create a node there and then connect

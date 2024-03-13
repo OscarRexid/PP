@@ -116,28 +116,31 @@
                 
                 //Selecting which pipe to connect to
                 static const char* current_item;
-                if (ImGui::BeginCombo("Connected Pipe", current_item))
-                {
-                    for (int i = 0; i < connectedPipes.size(); i++) {
-                        bool is_selected = (boosterNode->outletPipe == connectedPipes[i]);
-                        if (ImGui::Selectable(std::to_string(connectedPipes[i]->getId()).c_str(), is_selected)) {
-                            if (connectedPipes[i]->Node1->getId() == NodeId) {
-                                boosterNode->updateoutletPipe(connectedPipes[i],1);
-                            }
-                            else if (connectedPipes[i]->Node2->getId() == NodeId) {
-                                boosterNode->updateoutletPipe(connectedPipes[i],2);
-                            }
-                            else {
-                                //ERROR
-                                std::cout << "ERROR: Incorrect node when changing outletpipe";
-                            }
-                            
-                            current_item = std::to_string(connectedPipes[i]->getId()).c_str();
-                        }
-                    }
+                if (!connectedPipes.empty()) {
+                    if (ImGui::BeginCombo("Connected Pipe", current_item))
+                    {
+                        for (int i = 0; i < connectedPipes.size(); i++) {
+                            bool is_selected = (boosterNode->outletPipe == connectedPipes[i]);
+                            if (ImGui::Selectable(std::to_string(connectedPipes[i]->getId()).c_str(), is_selected)) {
+                                if (connectedPipes[i]->Node1->getId() == NodeId) {
+                                    boosterNode->updateoutletPipe(connectedPipes[i], 1);
+                                }
+                                else if (connectedPipes[i]->Node2->getId() == NodeId) {
+                                    boosterNode->updateoutletPipe(connectedPipes[i], 2);
+                                }
+                                else {
+                                    //ERROR
+                                    std::cout << "ERROR: Incorrect node when changing outletpipe";
+                                }
 
-                    ImGui::EndCombo();
+                                current_item = std::to_string(connectedPipes[i]->getId()).c_str();
+                            }
+                        }
+
+                        ImGui::EndCombo();
+                    }
                 }
+                
 
             }
         }

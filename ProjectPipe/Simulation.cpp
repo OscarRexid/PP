@@ -49,6 +49,8 @@ void simulation::run() {
         //c_t.push_back((frictionfactor(200000.f,i) * myapp->Pipes[i]->length / (myapp->Pipes[i]->diameter * 2 * g * pow(A[i], 2))) + myapp->Pipes[i]->Node1->KValue/(2 * g * pow(A[i], 2)));
         
         q.push_back(200000.f * A[i] * 0.001 / (rho * myapp->Pipes[i]->diameter));
+        
+        /*
         if (myapp->Pipes[i]->afterBooster) {
             if (myapp->Pipes[i]->boosterNode == 1) {
                 q[i] += c_t[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
@@ -58,6 +60,7 @@ void simulation::run() {
             }
                 
         }
+        */
         std::cout << "q: " << q[i] << "\n";
         std::cout << "c_t: " << c_t[i] << "\n";
         
