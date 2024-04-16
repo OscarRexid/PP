@@ -51,7 +51,7 @@ void simulation::run() {
         q.push_back(200000.f * A[i] * 0.001 / (rho * myapp->Pipes[i]->diameter));
         
         
-        /*
+        
         if (myapp->Pipes[i]->afterBooster) {
             if (myapp->Pipes[i]->boosterNode == 1) {
                 q[i] += c_t[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
@@ -61,20 +61,12 @@ void simulation::run() {
             }
                 
         }
-        */
+ 
         std::cout << "q: " << q[i] << "\n";
         std::cout << "c_t: " << c_t[i] << "\n";
         
         h.push_back( (pow(q[i], 2) / c_t[i]) );
-        if (myapp->Pipes[i]->afterBooster) {
-            if (myapp->Pipes[i]->boosterNode == 1) {
-                h[i] += myapp->Pipes[i]->Node1->boosterNode->headGained;
-            }
-            else {
-                h[i] += myapp->Pipes[i]->Node2->boosterNode->headGained;
-            }
 
-        }
         
         std::cout << "h: " << h[i] << "\n";
 
@@ -88,6 +80,7 @@ void simulation::run() {
     int attempts = 0;
     while (errors > 0) {
         Eigen::MatrixXd M = Eigen::MatrixXd::Zero(sizeNodes, sizeNodes);
+       // Eigen::MatrixXd Mbooster = Eigen::MatrixXd::Zero(sizeNodes, sizeNodes);
 
 
         //Inserting all the connections and their coeffecients into the matrix
@@ -113,14 +106,34 @@ void simulation::run() {
         std::vector<int> knownQ;
         Eigen::VectorXd Q = Eigen::VectorXd::Zero(sizeNodes);
         for (int i = 0; i < sizeNodes; i++) {
-            //check if node is outlet because then Q is unknown
-            if (!(myapp->Nodes[i]->flowTypeVar == Node::flowType::output)) {
-                knownQ.push_back(i);
-            }
+            
             //Check if node is known flow otherwise Q=0
             if (myapp->Nodes[i]->flowTypeVar == Node::flowType::input) {
                 Q(i) = myapp->Nodes[i]->flowNode->flow;
             }
+
+            if (myapp->Nodes[i]->flowTypeVar == Node::flowType::connection && myapp->Nodes[i]->connectionTypeVar == Node::connectionType::booster) {
+                
+                if (myapp->Nodes[i]->boosterNode->outletPipe->getId() == myapp->Nodes[i]->connectedPipes[0]->getId()) {
+                    int j = myapp->Nodes[i]->connectedPipes[0]->getId() - 1;
+                    int k = myapp->Nodes[i]->connectedPipes[1]->getId() - 1;
+                    Q[i] += c[j] * myapp->Nodes[i]->boosterNode->headGained;
+                    Q[i] -= c[k] * myapp->Nodes[i]->boosterNode->headGained;
+                }
+                else {
+                    int j = myapp->Nodes[i]->connectedPipes[1]->getId() - 1;
+                    int k = myapp->Nodes[i]->connectedPipes[0]->getId() - 1;
+                    Q[i] += c[j] * myapp->Nodes[i]->boosterNode->headGained;
+                    Q[i] -= c[k] * myapp->Nodes[i]->boosterNode->headGained;
+                }
+            
+            }
+          
+            //check if node is outlet because then Q is unknown
+            if (!(myapp->Nodes[i]->flowTypeVar == Node::flowType::output)) {
+                knownQ.push_back(i);
+            }
+           
             
         }
         for (int i = 0; i < knownQ.size(); i++) {
@@ -171,7 +184,23 @@ void simulation::run() {
         for (int i = 0; i < sizePipes; i++) {
 
             q2.push_back( h2[i] * c[i]); //recalcualte flow from headloss  q_c
+            double k = 1.f;
+            if (q2[i] < 0) {
+                k = -1.f;
+            }
+ 
+            if (myapp->Pipes[i]->afterBooster) {
+                if (myapp->Pipes[i]->boosterNode == 1) {
+                    q2[i] += k*c[i]*  myapp->Pipes[i]->Node1->boosterNode->headGained;
+                }
+                else {
+                    q2[i] += k*c[i] * myapp->Pipes[i]->Node2->boosterNode->headGained;
+                }
+
+            }
             
+            
+
             double Re = reynold(abs(q2[i]), myapp->Pipes[i]->diameter, 1000.f, 0.001);
             if (myapp->Pipes[i]->Node1->KValue > 0) {
                 c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(Re, i) * myapp->Pipes[i]->length)) + (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue);
@@ -185,16 +214,17 @@ void simulation::run() {
             else {
                 h3.push_back(pow(q2[i], 2) / c_t[i]); //recalcualte headloss from flow
             }
-           /* if (myapp->Pipes[i]->afterBooster) {
+            
+            if (myapp->Pipes[i]->afterBooster) {
                 if (myapp->Pipes[i]->boosterNode == 1) {
-                    h3[i] += myapp->Pipes[i]->Node1->boosterNode->headGained;
+                    h3[i] -= (h3[i] / abs(h3[i]))*myapp->Pipes[i]->Node1->boosterNode->headGained;
                 }
                 else {
-                    h3[i] += myapp->Pipes[i]->Node2->boosterNode->headGained;
+                    h3[i] -= (h3[i] / abs(h3[i]))* myapp->Pipes[i]->Node2->boosterNode->headGained;
                 }
 
             }
-           */
+           
 
             c2.push_back( q2[i] / h3[i]); // new resitance coefficient
 
@@ -206,8 +236,21 @@ void simulation::run() {
             if (abs(dev[i]) > myapp->allowedDev) {
                 std::cout << i << ": C: " << c[i] << "C2: " << c2[i] << "\n";
                 c[i] = (c2[i] + c[i]) / 2.f; // new restiance coeffecient based on average
-
+                
                 q[i] = c[i] * h2[i]; // new flow
+                double k = 1.f;
+                if (q[i] < 0) {
+                    k = -1.f;
+                }
+                if (myapp->Pipes[i]->afterBooster) {
+                    if (myapp->Pipes[i]->boosterNode == 1) {
+                        q[i] += k*c[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
+                    }
+                    else {
+                        q[i] +=k* c[i] * myapp->Pipes[i]->Node2->boosterNode->headGained;
+                    }
+
+                }
                 
                 std::cout << "q: " << q[i] << "\n";
 
@@ -227,15 +270,17 @@ void simulation::run() {
                 else {
                     h[i] = pow(q[i], 2) / c_t[i];
                 }
+                /*
                 if (myapp->Pipes[i]->afterBooster) {
                     if (myapp->Pipes[i]->boosterNode == 1) {
-                        h[i] += myapp->Pipes[i]->Node1->boosterNode->headGained;
+                        h[i] -= (h[i] / abs(h[i])) * myapp->Pipes[i]->Node1->boosterNode->headGained;
                     }
                     else {
-                        h[i] += myapp->Pipes[i]->Node2->boosterNode->headGained;
+                        h[i] -= (h[i] / abs(h[i])) * myapp->Pipes[i]->Node2->boosterNode->headGained;
                     }
 
                 }
+                */
                 std::cout << "h:" << h[i] << "\n";
 
                 c[i] = q[i] / h[i];

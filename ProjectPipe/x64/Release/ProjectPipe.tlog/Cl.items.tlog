@@ -1,5 +1,8 @@
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\App.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\App.obj
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Booster.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\Booster.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Connection.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\Connection.obj
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Fluidcalculations.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\Fluidcalculations.obj
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\FluidManager.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\FluidManager.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Grid.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\Grid.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\imgui\imgui-SFML.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\imgui-SFML.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\imgui\imgui.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\imgui.obj
@@ -7,5 +10,8 @@ C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\imgui\imgui_demo.cpp;C:\User
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\imgui\imgui_draw.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\imgui_draw.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\imgui\imgui_tables.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\imgui_tables.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\imgui\imgui_widgets.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\imgui_widgets.obj
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\KnownFlowNode.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\KnownFlowNode.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\main.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\main.obj
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Math.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\Math.obj
 C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Node.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\Node.obj
+C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\Simulation.cpp;C:\Users\swezl\source\repos\ProjectPipe\ProjectPipe\x64\Release\Simulation.obj
