@@ -221,6 +221,11 @@ void App::Run() {
                                                 selectedNode = -1;
                                             }
                                         }
+                                        else {
+                                            std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);
+                                            Pipes.push_back(std::move(newCon));
+                                            selectedNode = -1;
+                                        }
                                     }
                                     else {
                                         std::unique_ptr<Connection> newCon = std::make_unique<Connection>(Nodes[Nodeid].get(), Nodes[selectedNode].get(), Pipes.size() + 1);

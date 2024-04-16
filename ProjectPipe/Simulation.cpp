@@ -50,6 +50,7 @@ void simulation::run() {
         
         q.push_back(200000.f * A[i] * 0.001 / (rho * myapp->Pipes[i]->diameter));
         
+        
         /*
         if (myapp->Pipes[i]->afterBooster) {
             if (myapp->Pipes[i]->boosterNode == 1) {
@@ -65,6 +66,15 @@ void simulation::run() {
         std::cout << "c_t: " << c_t[i] << "\n";
         
         h.push_back( (pow(q[i], 2) / c_t[i]) );
+        if (myapp->Pipes[i]->afterBooster) {
+            if (myapp->Pipes[i]->boosterNode == 1) {
+                h[i] += myapp->Pipes[i]->Node1->boosterNode->headGained;
+            }
+            else {
+                h[i] += myapp->Pipes[i]->Node2->boosterNode->headGained;
+            }
+
+        }
         
         std::cout << "h: " << h[i] << "\n";
 
@@ -137,7 +147,7 @@ void simulation::run() {
 
             //}
             else if (myapp->Nodes[i]->flowTypeVar == Node::flowType::connection && myapp->Nodes[i]->connectionTypeVar == Node::connectionType::booster) {
-                H(i) = H1(j) + myapp->Nodes[i]->height + myapp->Nodes[i]->boosterNode->headGained;
+                H(i) = H1(j) + myapp->Nodes[i]->height;// +myapp->Nodes[i]->boosterNode->headGained;
             }
             else {
                 H(i) = H1(j) + myapp->Nodes[i]->height;
@@ -161,15 +171,7 @@ void simulation::run() {
         for (int i = 0; i < sizePipes; i++) {
 
             q2.push_back( h2[i] * c[i]); //recalcualte flow from headloss  q_c
-            if (myapp->Pipes[i]->afterBooster) {
-                if (myapp->Pipes[i]->boosterNode == 1) {
-                    q2[i] += c[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
-                }
-                else {
-                    q2[i] += c[i] * myapp->Pipes[i]->Node2->boosterNode->headGained;
-                }
-
-            }
+            
             double Re = reynold(abs(q2[i]), myapp->Pipes[i]->diameter, 1000.f, 0.001);
             if (myapp->Pipes[i]->Node1->KValue > 0) {
                 c_t.push_back(((myapp->Pipes[i]->diameter * 2.f * g * pow(A[i], 2)) / (frictionfactor(Re, i) * myapp->Pipes[i]->length)) + (2 * g * pow(A[i], 2)) / myapp->Pipes[i]->Node1->KValue);
@@ -183,6 +185,17 @@ void simulation::run() {
             else {
                 h3.push_back(pow(q2[i], 2) / c_t[i]); //recalcualte headloss from flow
             }
+           /* if (myapp->Pipes[i]->afterBooster) {
+                if (myapp->Pipes[i]->boosterNode == 1) {
+                    h3[i] += myapp->Pipes[i]->Node1->boosterNode->headGained;
+                }
+                else {
+                    h3[i] += myapp->Pipes[i]->Node2->boosterNode->headGained;
+                }
+
+            }
+           */
+
             c2.push_back( q2[i] / h3[i]); // new resitance coefficient
 
             dev.push_back( (abs(h3[i]) / abs(h2[i])) - 1); //deviation
@@ -195,15 +208,7 @@ void simulation::run() {
                 c[i] = (c2[i] + c[i]) / 2.f; // new restiance coeffecient based on average
 
                 q[i] = c[i] * h2[i]; // new flow
-                if (myapp->Pipes[i]->afterBooster) {
-                    if (myapp->Pipes[i]->boosterNode == 1) {
-                        q[i] += c[i] * myapp->Pipes[i]->Node1->boosterNode->headGained;
-                    }
-                    else {
-                        q[i] += c[i] * myapp->Pipes[i]->Node2->boosterNode->headGained;
-                    }
-
-                }
+                
                 std::cout << "q: " << q[i] << "\n";
 
                 double Re = reynold(abs(q[i]), myapp->Pipes[i]->diameter,1000.f, 0.001);
@@ -221,6 +226,15 @@ void simulation::run() {
                 }
                 else {
                     h[i] = pow(q[i], 2) / c_t[i];
+                }
+                if (myapp->Pipes[i]->afterBooster) {
+                    if (myapp->Pipes[i]->boosterNode == 1) {
+                        h[i] += myapp->Pipes[i]->Node1->boosterNode->headGained;
+                    }
+                    else {
+                        h[i] += myapp->Pipes[i]->Node2->boosterNode->headGained;
+                    }
+
                 }
                 std::cout << "h:" << h[i] << "\n";
 
